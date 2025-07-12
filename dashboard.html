@@ -13,7 +13,8 @@
 </head>
 <body class="bg-gray-950 text-white min-h-screen">
   <div class="flex flex-col md:flex-row h-full">
-    <!-- Left: Static Info -->
+    
+    <!-- Left Panel: Static Info -->
     <div class="md:w-1/2 p-6 bg-gray-900 border-r border-gray-800 overflow-auto">
       <h1 class="text-3xl font-bold mb-6 text-blue-400">👋 Welcome to Your Dashboard</h1>
       <div class="space-y-4 text-base">
@@ -29,13 +30,14 @@
       <div id="projects-list" class="mt-4 space-y-4"></div>
     </div>
 
-    <!-- Right: Update + Add -->
+    <!-- Right Panel: Forms + AI -->
     <div class="md:w-1/2 p-6 bg-gray-800 overflow-auto">
       <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold text-green-400">Update Profile</h2>
         <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
       </div>
 
+      <!-- Profile Update Form -->
       <form id="update-form" class="space-y-4 mt-6">
         <input id="full_name" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Full Name" />
         <input id="email" type="email" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Email" />
@@ -45,8 +47,9 @@
         <input id="github_url" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="GitHub URL" />
         <button type="submit" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-white">💾 Save Info</button>
       </form>
-      <p id="update-status" class="mt-4 text-sm"></p>
+      <p id="update-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
 
+      <!-- Project Add/Edit -->
       <h3 class="text-xl font-semibold text-blue-300 mt-10">Projects Manager</h3>
       <button id="toggle-project-form" class="mt-2 mb-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">➕ Add New Project</button>
 
@@ -58,7 +61,17 @@
         <input id="project_skills" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Skills (comma-separated)" />
         <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Project</button>
       </form>
-      <p id="project-status" class="mt-4 text-sm"></p>
+      <p id="project-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
+
+      <!-- AI CV Generator -->
+      <h3 class="text-xl font-semibold text-green-300 mt-10">🤖 AI CV Generator</h3>
+      <div class="space-y-3 bg-gray-900 p-4 rounded mt-4">
+        <input id="openai_key" type="password" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="🔑 Enter OpenAI API Key" />
+        <textarea id="job_desc" rows="5" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="📝 Paste job description here (English or Hebrew)..."></textarea>
+        <button id="generate-cv" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded w-full">⚡ Generate CV with AI</button>
+        <p id="cv-status" class="text-sm text-gray-400"></p>
+        <a id="cv-download" href="#" download="ai-cv.pdf" class="hidden text-blue-400 underline block mt-2">📥 Download CV PDF</a>
+      </div>
     </div>
   </div>
 
