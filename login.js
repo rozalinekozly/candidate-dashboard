@@ -17,7 +17,9 @@ export async function login() {
     status.textContent = '❌ Login failed';
     status.style.color = 'red';
   } else {
-    status.textContent = '✅ Login successful';
-    status.style.color = 'green';
+    // Store user data in session storage
+    sessionStorage.setItem('user_id', data.id);
+    // Redirect to dashboard
+    window.location.href = 'dashboard.html';
   }
 }

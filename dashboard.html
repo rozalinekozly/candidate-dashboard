@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background-color: #f4f4f4;
+    }
+    .dashboard {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #007bff;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 0.25rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.5rem 1rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #logout-btn {
+      background-color: #dc3545;
+      float: right;
+      margin-bottom: 1rem;
+    }
+    #logout-btn:hover {
+      background-color: #c82333;
+    }
+    #update-status {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <h1>Welcome 👋</h1>
+    <button id="logout-btn">🚪 Logout</button>
+
+    <h3>Your Info:</h3>
+    <form id="update-form">
+      <label>Full Name:</label>
+      <input type="text" id="full_name" />
+
+      <label>Email:</label>
+      <input type="email" id="email" />
+
+      <label>Bio:</label>
+      <textarea id="bio" rows="3"></textarea>
+
+      <label>LinkedIn URL:</label>
+      <input type="url" id="linkedin_url" />
+
+      <label>Portfolio URL:</label>
+      <input type="url" id="portfolio_url" />
+
+      <label>GitHub URL:</label>
+      <input type="url" id="github_url" />
+
+      <label>Projects (JSON format):</label>
+      <textarea id="projects" rows="4" placeholder='e.g. [{"name": "Project A", "desc": "desc"}]'></textarea>
+
+      <button type="submit">💾 Update</button>
+    </form>
+
+    <p id="update-status"></p>
+  </div>
+
+  <script type="module" src="./dashboard.js"></script>
+</body>
+</html>
