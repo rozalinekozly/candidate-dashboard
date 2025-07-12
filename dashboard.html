@@ -2,92 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hi-Tech Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      font-family: sans-serif;
-      padding: 2rem;
-      background-color: #f4f4f4;
-    }
-    .dashboard {
-      background: white;
-      padding: 2rem;
-      border-radius: 10px;
-      max-width: 700px;
-      margin: auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h1 {
-      color: #007bff;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-top: 0.25rem;
-    }
-    button {
-      margin-top: 1.5rem;
-      padding: 0.5rem 1rem;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #218838;
-    }
-    #logout-btn {
-      background-color: #dc3545;
-      float: right;
-      margin-bottom: 1rem;
-    }
-    #logout-btn:hover {
-      background-color: #c82333;
-    }
-    #update-status {
-      margin-top: 1rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
   </style>
 </head>
-<body>
-  <div class="dashboard">
-    <h1>Welcome 👋</h1>
-    <button id="logout-btn">🚪 Logout</button>
+<body class="bg-gray-950 text-white min-h-screen">
+  <div class="flex flex-col md:flex-row h-full">
+    <!-- Left: Static Info -->
+    <div class="md:w-1/2 p-6 bg-gray-900 border-r border-gray-800 overflow-auto">
+      <h1 class="text-3xl font-bold mb-6 text-blue-400">👋 Welcome to Your Dashboard</h1>
+      <div class="space-y-4 text-base">
+        <div><span class="font-semibold text-gray-400">Full Name:</span> <span id="static_full_name"></span></div>
+        <div><span class="font-semibold text-gray-400">Email:</span> <span id="static_email"></span></div>
+        <div><span class="font-semibold text-gray-400">Bio:</span> <span id="static_bio"></span></div>
+        <div><span class="font-semibold text-gray-400">LinkedIn:</span> <a id="static_linkedin" class="text-blue-300 underline" target="_blank"></a></div>
+        <div><span class="font-semibold text-gray-400">Portfolio:</span> <a id="static_portfolio" class="text-blue-300 underline" target="_blank"></a></div>
+        <div><span class="font-semibold text-gray-400">GitHub:</span> <a id="static_github" class="text-blue-300 underline" target="_blank"></a></div>
+      </div>
 
-    <h3>Your Info:</h3>
-    <form id="update-form">
-      <label>Full Name:</label>
-      <input type="text" id="full_name" />
+      <h2 class="mt-10 text-xl font-semibold text-blue-300">🧩 Your Projects</h2>
+      <div id="projects-list" class="mt-4 space-y-4"></div>
+    </div>
 
-      <label>Email:</label>
-      <input type="email" id="email" />
+    <!-- Right: Update + Add -->
+    <div class="md:w-1/2 p-6 bg-gray-800 overflow-auto">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-green-400">Update Profile</h2>
+        <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
+      </div>
 
-      <label>Bio:</label>
-      <textarea id="bio" rows="3"></textarea>
+      <form id="update-form" class="space-y-4 mt-6">
+        <input id="full_name" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Full Name" />
+        <input id="email" type="email" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Email" />
+        <textarea id="bio" class="w-full bg-gray-700 text-white p-2 rounded" rows="2" placeholder="Bio"></textarea>
+        <input id="linkedin_url" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="LinkedIn URL" />
+        <input id="portfolio_url" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Portfolio URL" />
+        <input id="github_url" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="GitHub URL" />
+        <button type="submit" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-white">💾 Save Info</button>
+      </form>
+      <p id="update-status" class="mt-4 text-sm"></p>
 
-      <label>LinkedIn URL:</label>
-      <input type="url" id="linkedin_url" />
+      <h3 class="text-xl font-semibold text-blue-300 mt-10">Projects Manager</h3>
+      <button id="toggle-project-form" class="mt-2 mb-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">➕ Add New Project</button>
 
-      <label>Portfolio URL:</label>
-      <input type="url" id="portfolio_url" />
-
-      <label>GitHub URL:</label>
-      <input type="url" id="github_url" />
-
-      <label>Projects (JSON format):</label>
-      <textarea id="projects" rows="4" placeholder='e.g. [{"name": "Project A", "desc": "desc"}]'></textarea>
-
-      <button type="submit">💾 Update</button>
-    </form>
-
-    <p id="update-status"></p>
+      <form id="new-project-form" class="space-y-3 hidden bg-gray-900 p-4 rounded">
+        <input id="project_name" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Project Name" required />
+        <textarea id="project_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description" required></textarea>
+        <input id="project_demo" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Live Demo URL" />
+        <input id="project_repo" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="GitHub Repo URL" />
+        <input id="project_skills" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Skills (comma-separated)" />
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Project</button>
+      </form>
+      <p id="project-status" class="mt-4 text-sm"></p>
+    </div>
   </div>
 
   <script type="module" src="./dashboard.js"></script>
