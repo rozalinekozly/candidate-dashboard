@@ -25,6 +25,18 @@ export function generateCVPrompt(userData, jobDescription) {
 - Do not include markdown, bullets, emojis, or any decorative symbols.
 - Omit any empty or irrelevant sections.
 - Start directly with the CV. Do not explain or introduce anything.
+Write the final CV with these rules:
+- Include candidate name and contact at the top
+- Write the bio as a summary paragraph at the top under the name
+- Include education
+- List technical skills in grouped categories
+- Then list 1–3 relevant projects with clear:
+   • Project Name
+   • Description (rewritten to match job)
+   • GitHub link (if available)
+   • Live Demo (if available)
+   • Skills
+-The CV should match the tone of the job description: professional, clear, and results-oriented.
 
 --- User Profile ---`);
 
