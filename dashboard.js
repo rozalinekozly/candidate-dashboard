@@ -357,6 +357,23 @@ document.getElementById('generate-cv').onclick = async () => {
   const skills = extractSkills(projects);
 
   // Generate the CV prompt using user data and job description
+// Filter relevant projects based on keywords in the job description
+const filteredProjects = projects.filter(p => {
+  const jobText = jobDesc.toLowerCase();
+  const projectText = `${p.name} ${p.desc} ${p.skills?.join(' ')}`.toLowerCase();
+
+  return (
+    jobText.includes('web') && projectText.includes('javascript') ||
+    jobText.includes('frontend') && projectText.includes('react') ||
+    jobText.includes('backend') && projectText.includes('node') ||
+    jobText.includes('api') && projectText.includes('api') ||
+    jobText.includes('data') && projectText.includes('sql') ||
+    jobText.includes('automation') && projectText.includes('automation') ||
+    jobText.includes('testing') && projectText.includes('qa') ||
+    jobText.includes('ai') && projectText.includes('openai')
+  );
+});
+
 const prompt = generateCVPrompt({
   name: currentUserProfile.full_name || '',
   email: currentUserProfile.email || '',
@@ -364,7 +381,7 @@ const prompt = generateCVPrompt({
   linkedin: currentUserProfile.linkedin_url || '',
   github: currentUserProfile.github_url || '',
   skills,
-  projects: projects.map(p => ({
+  projects: filteredProjects.map(p => ({
     name: p.name,
     description: p.desc,
     demo: p.demo,

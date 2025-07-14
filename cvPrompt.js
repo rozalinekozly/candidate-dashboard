@@ -13,21 +13,20 @@ export function generateCVPrompt(userData, jobDescription) {
   const prompt = [];
 
   // Job context
-  prompt.push(`The user is applying for this job:\n"${jobDescription}"\n`);
+  prompt.push(`The user is applying for the following job:\n"${jobDescription}"\n`);
 
-  // Instructions for AI
-  prompt.push(`Your task is to generate a strong, concise, and tailored CV that fits this job. Follow these steps:
+  // Instructions for GPT
+  prompt.push(`Based on the filtered projects and user profile data below, write a clean, professional, plain-text CV tailored to this job. Your responsibilities:
 
-1. Select only the most relevant projects from the list below, based on the job description.
-2. Rewrite the project descriptions to emphasize the relevant technical skills, tools, and impact.
-3. Summarize the user's core skills that match the job.
-4. Maintain a professional, confident tone without exaggeration.
-5. Keep the CV easy to read in plain text with no markdown or decorations.
-6. Omit any section that is missing or empty.
-7. Only include real content based on the data.
-8. Do not explain anything — just write the CV directly.
+- Rewrite project descriptions to match the job tone and showcase impact.
+- Summarize skills relevant to the job.
+- Do not fabricate any information.
+- Use plain section headers (e.g., "Technical Skills", "Projects").
+- Do not include markdown, bullets, emojis, or any decorative symbols.
+- Omit any empty or irrelevant sections.
+- Start directly with the CV. Do not explain or introduce anything.
 
---- User Data ---`);
+--- User Profile ---`);
 
   if (name) prompt.push(`Name: ${name}`);
   if (email) prompt.push(`Email: ${email}`);
@@ -41,7 +40,7 @@ export function generateCVPrompt(userData, jobDescription) {
   }
 
   if (projects.length) {
-    prompt.push(`Projects:\n`);
+    prompt.push(`Relevant Projects:\n`);
     projects.forEach((p, i) => {
       prompt.push(`Project ${i + 1}:
 Name: ${p.name}
@@ -53,7 +52,7 @@ Skills: ${Array.isArray(p.skills) ? p.skills.join(', ') : 'N/A'}
     });
   }
 
-  prompt.push(`Now, write the plain-text CV based only on this data. Do NOT mention any projects that are not relevant to the job description.`);
+  prompt.push(`Now write the CV output.`);
 
   return prompt.join('\n');
 }
