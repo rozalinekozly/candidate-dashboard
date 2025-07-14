@@ -357,15 +357,22 @@ document.getElementById('generate-cv').onclick = async () => {
   const skills = extractSkills(projects);
 
   // Generate the CV prompt using user data and job description
-  const prompt = generateCVPrompt({
-    name: currentUserProfile.full_name || '',
-    email: currentUserProfile.email || '',
-    bio: currentUserProfile.bio || '',
-    linkedin: currentUserProfile.linkedin_url || '',
-    github: currentUserProfile.github_url || '',
-    skills,
-    projects: projects.map(p => ({ name: p.name, description: p.desc }))
-  }, jobDesc);
+const prompt = generateCVPrompt({
+  name: currentUserProfile.full_name || '',
+  email: currentUserProfile.email || '',
+  bio: currentUserProfile.bio || '',
+  linkedin: currentUserProfile.linkedin_url || '',
+  github: currentUserProfile.github_url || '',
+  skills,
+  projects: projects.map(p => ({
+    name: p.name,
+    description: p.desc,
+    demo: p.demo,
+    repo: p.repo,
+    skills: Array.isArray(p.skills) ? p.skills : []
+  }))
+}, jobDesc);
+
 
   // Make the API request to OpenAI
   try {
