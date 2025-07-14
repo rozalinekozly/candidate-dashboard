@@ -18,25 +18,27 @@ export function generateCVPrompt(userData, jobDescription) {
   // Instructions for GPT
   prompt.push(`Based on the filtered projects and user profile data below, write a clean, professional, plain-text CV tailored to this job. Your responsibilities:
 
-- Rewrite project descriptions to match the job tone and showcase impact.
-- Summarize skills relevant to the job.
-- Do not fabricate any information.
-- Use plain section headers (e.g., "Technical Skills", "Projects").
-- Do not include markdown, bullets, emojis, or any decorative symbols.
-- Omit any empty or irrelevant sections.
-- Start directly with the CV. Do not explain or introduce anything.
-Write the final CV with these rules:
-- Include candidate name and contact at the top
-- Write the bio as a summary paragraph at the top under the name
-- Include education
-- List technical skills in grouped categories
-- Then list 1–3 relevant projects with clear:
-   • Project Name
-   • Description (rewritten to match job)
-   • GitHub link (if available)
-   • Live Demo (if available)
-   • Skills
--The CV should match the tone of the job description: professional, clear, and results-oriented.
+Now, write the final CV using ONLY the data above. You MUST preserve all real project names and descriptions unless told otherwise. Do not invent project names or add generic summaries.
+
+The CV should be structured as follows:
+
+1. Candidate Info: Full name and contact (email, GitHub)
+2. Short Professional Summary (Bio)
+3. Education
+4. Technical Skills grouped by topic
+5. 1–3 Projects — each in this exact format:
+   - Project Name (must be exactly as provided)
+   - Rewritten description using only the original project data, tailored to the job description
+   - GitHub link if present, otherwise omit
+   - Live Demo link if present, otherwise omit
+   - Skills used (from original data)
+
+Strict rules:
+- Do not invent or rename projects
+- Do not say "N/A" if GitHub or demo links are missing — just omit the field entirely
+- Do not add any explanations or comments
+- Do not use markdown, emojis, or decorative symbols
+- Output a clean, plain-text CV directly
 
 --- User Profile ---`);
 
