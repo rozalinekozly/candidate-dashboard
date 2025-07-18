@@ -290,7 +290,7 @@
             <input id="job_company" class="w-full gh-input" placeholder="Company" required />
             <input id="job_year_from" type="number" class="w-full gh-input" placeholder="Year From" />
             <input id="job_year_to" type="number" class="w-full gh-input" placeholder="Year To (optional)" />
-            <textarea id="job_desc" rows="2" class="w-full gh-input" placeholder="Description"></textarea>
+            <textarea id="job_description_field" rows="2" class="w-full gh-input" placeholder="Description"></textarea>
             <input id="job_links" type="url" class="w-full gh-input" placeholder="More Info Link (optional)" />
             <button type="submit" class="gh-btn gh-btn-success w-full">Save Job</button>
           </form>
@@ -352,7 +352,7 @@
           <h3 class="gh-sub-heading">AI CV Generator</h3>
           <div class="space-y-3 mt-4">
             <input id="openai_key" type="password" class="w-full gh-input" placeholder="OpenAI API Key" />
-            <textarea id="job_desc" rows="5" class="w-full gh-input" placeholder="Paste job description here..."></textarea>
+            <textarea id="ai_job_desc" rows="5" class="w-full gh-input" placeholder="Paste job description here..."></textarea>
             <button id="generate-cv" class="gh-btn gh-btn-primary w-full">Generate CV with AI</button>
             <pre id="cv-output" class="mt-4"></pre>
             <button id="download-pdf" class="mt-2 gh-btn gh-btn-primary hidden w-full">Download CV as PDF</button>

@@ -41,6 +41,7 @@ async function loadUserData() {
     document.getElementById(id).value = data[id] || '';
   }); // Populate the form fields with user data
 
+  // Removed emojis from static text content
   document.getElementById('static_full_name').textContent = data.full_name || ''; // Display user data in static fields
   document.getElementById('static_email').textContent = data.email || '';
   document.getElementById('static_bio').textContent = data.bio || '';
@@ -78,24 +79,24 @@ function renderProjects() { // Function to render user projects on the dashboard
 
   userProjects.forEach((project, index) => { // Loop through each project and create a card
     const card = document.createElement('div');
-    card.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    card.className = 'gh-card relative'; // Applied gh-card class
     const confirmBoxId = `confirm-project-box-${index}`;
 
     card.innerHTML = `
-      <h4 class="text-lg font-semibold text-blue-300">${project.name}</h4>
+      <h4 class="text-lg font-semibold">${project.name}</h4>
       <p class="text-sm mt-1"><strong>Description:</strong> ${project.desc}</p>
-      <p class="text-sm"><strong>Live Demo:</strong> <a href="${project.demo}" target="_blank" class="text-blue-400 underline">${project.demo}</a></p>
-      <p class="text-sm"><strong>GitHub:</strong> <a href="${project.repo}" target="_blank" class="text-blue-400 underline">${project.repo}</a></p>
+      <p class="text-sm"><strong>Live Demo:</strong> <a href="${project.demo}" target="_blank">${project.demo}</a></p>
+      <p class="text-sm"><strong>GitHub:</strong> <a href="${project.repo}" target="_blank">${project.repo}</a></p>
       <p class="text-sm"><strong>Skills:</strong> ${Array.isArray(project.skills) ? project.skills.join(', ') : 'N/A'}</p>
       <div class="flex gap-2 mt-3">
-        <button class="edit-project-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
-        <button class="delete-project-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+        <button class="edit-project-btn gh-btn gh-btn-secondary" data-index="${index}">Edit</button>
+        <button class="delete-project-btn gh-btn gh-btn-danger" data-index="${index}" data-confirm="${confirmBoxId}">Delete</button>
       </div>
-      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3">
         <p class="mb-2">Are you sure you want to delete <strong>${project.name}</strong>?</p>
         <div class="flex gap-3">
-          <button class="confirm-delete-project bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
-          <button class="cancel-delete-project bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+          <button class="confirm-delete-project gh-btn gh-btn-danger">Yes</button>
+          <button class="cancel-delete-project gh-btn gh-btn-secondary">Cancel</button>
         </div>
       </div>
     `;
@@ -150,10 +151,10 @@ async function saveProjectsToDB() { // Function to save user projects to the dat
   const { error } = await supabase.from('user_profiles').update({ projects: userProjects }).eq('id', userId);
   if (!error) {// If no error, reload the projects
     renderProjects();
-    fadeMessage('project-status', '✅ Project saved!'); // Show success message
+    fadeMessage('project-status', 'Project saved!'); // Show success message
   } else {
     console.error("Error saving projects:", error);
-    fadeMessage('project-status', '❌ Error saving project.');
+    fadeMessage('project-status', 'Error saving project.');
   }
 }
 
@@ -191,23 +192,23 @@ function renderCertificates() {
   }
   userCertificates.forEach((cert, index) => {
     const el = document.createElement('div');
-    el.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    el.className = 'gh-card relative'; // Applied gh-card class
     const confirmBoxId = `confirm-cert-box-${index}`;
     el.innerHTML = `
       ${cert.image ? `<img src="${cert.image}" class="h-12 mb-2" alt="logo">` : ''}
-      <h4 class="font-semibold text-blue-300">${cert.title}</h4>
+      <h4 class="font-semibold">${cert.title}</h4>
       <p class="text-sm">${cert.provider} — ${cert.yearFrom || ''} ${cert.yearTo ? `- ${cert.yearTo}` : ''}</p>
       ${cert.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${cert.description}</p>` : ''}
-      ${cert.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${cert.links}" target="_blank" class="text-blue-400 underline">Certificate Link</a></p>` : ''}
+      ${cert.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${cert.links}" target="_blank">Certificate Link</a></p>` : ''}
       <div class="flex gap-2 mt-3">
-        <button class="edit-certificate-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
-        <button class="delete-certificate-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+        <button class="edit-certificate-btn gh-btn gh-btn-secondary" data-index="${index}">Edit</button>
+        <button class="delete-certificate-btn gh-btn gh-btn-danger" data-index="${index}" data-confirm="${confirmBoxId}">Delete</button>
       </div>
-      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3">
         <p class="mb-2">Are you sure you want to delete <strong>${cert.title}</strong>?</p>
         <div class="flex gap-3">
-          <button class="confirm-delete-certificate bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
-          <button class="cancel-delete-certificate bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+          <button class="confirm-delete-certificate gh-btn gh-btn-danger">Yes</button>
+          <button class="cancel-delete-certificate gh-btn gh-btn-secondary">Cancel</button>
         </div>
       </div>
     `;
@@ -261,10 +262,10 @@ async function saveCertificatesToDB() {
   const { error } = await supabase.from('user_profiles').update({ certificates: userCertificates }).eq('id', userId);
   if (!error) {
     renderCertificates();
-    fadeMessage('certificate-status', '✅ Certificate saved!');
+    fadeMessage('certificate-status', 'Certificate saved!');
   } else {
     console.error("Error saving certificates:", error);
-    fadeMessage('certificate-status', '❌ Error saving certificate.');
+    fadeMessage('certificate-status', 'Error saving certificate.');
   }
 }
 
@@ -304,23 +305,23 @@ function renderEmployment() {
   }
   userEmployment.forEach((job, index) => {
     const el = document.createElement('div');
-    el.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    el.className = 'gh-card relative'; // Applied gh-card class
     const confirmBoxId = `confirm-job-box-${index}`;
     el.innerHTML = `
       ${job.image ? `<img src="${job.image}" class="h-12 mb-2" alt="logo">` : ''}
-      <h4 class="font-semibold text-blue-300">${job.title}</h4>
+      <h4 class="font-semibold">${job.title}</h4>
       <p class="text-sm">${job.company} — ${job.yearFrom || ''} ${job.yearTo ? `- ${job.yearTo}` : ''}</p>
       ${job.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${job.description}</p>` : ''}
-      ${job.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${job.links}" target="_blank" class="text-blue-400 underline">More Info</a></p>` : ''}
+      ${job.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${job.links}" target="_blank">More Info</a></p>` : ''}
       <div class="flex gap-2 mt-3">
-        <button class="edit-employment-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
-        <button class="delete-employment-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+        <button class="edit-employment-btn gh-btn gh-btn-secondary" data-index="${index}">Edit</button>
+        <button class="delete-employment-btn gh-btn gh-btn-danger" data-index="${index}" data-confirm="${confirmBoxId}">Delete</button>
       </div>
-      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3">
         <p class="mb-2">Are you sure you want to delete <strong>${job.title}</strong>?</p>
         <div class="flex gap-3">
-          <button class="confirm-delete-employment bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
-          <button class="cancel-delete-employment bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+          <button class="confirm-delete-employment gh-btn gh-btn-danger">Yes</button>
+          <button class="cancel-delete-employment gh-btn gh-btn-secondary">Cancel</button>
         </div>
       </div>
     `;
@@ -364,7 +365,7 @@ function renderEmployment() {
       document.getElementById('job_company').value = j.company;
       document.getElementById('job_year_from').value = j.yearFrom || '';
       document.getElementById('job_year_to').value = j.yearTo || '';
-      document.getElementById('job_desc').value = j.description || '';
+      document.getElementById('job_description_field').value = j.description || '';
       document.getElementById('new-employment-form').classList.remove('hidden');
     };
   });
@@ -374,10 +375,10 @@ async function saveEmploymentToDB() {
   const { error } = await supabase.from('user_profiles').update({ employment: userEmployment }).eq('id', userId);
   if (!error) {
     renderEmployment();
-    fadeMessage('employment-status', '✅ Employment saved!');
+    fadeMessage('employment-status', 'Employment saved!');
   } else {
     console.error("Error saving employment:", error);
-    fadeMessage('employment-status', '❌ Error saving employment.');
+    fadeMessage('employment-status', 'Error saving employment.');
   }
 }
 
@@ -389,7 +390,7 @@ async function addNewEmployment(e) {
     company: f.job_company.value,
     yearFrom: f.job_year_from.value,
     yearTo: f.job_year_to.value,
-    description: f.job_desc.value || '',
+    description: f.job_description_field.value || '',
     links: f.job_links?.value || '',
     image: f.job_image?.value || ''
   };
@@ -417,23 +418,23 @@ function renderVolunteering() {
   }
   userVolunteering.forEach((v, index) => {
     const el = document.createElement('div');
-    el.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    el.className = 'gh-card relative'; // Applied gh-card class
     const confirmBoxId = `confirm-vol-box-${index}`;
     el.innerHTML = `
       ${v.image ? `<img src="${v.image}" class="h-12 mb-2" alt="logo">` : ''}
-      <h4 class="font-semibold text-blue-300">${v.role}</h4>
+      <h4 class="font-semibold">${v.role}</h4>
       <p class="text-sm">${v.org} — ${v.yearFrom || ''} ${v.yearTo ? `- ${v.yearTo}` : ''}</p>
       ${v.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${v.description}</p>` : ''}
-      ${v.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${v.links}" target="_blank" class="text-blue-400 underline">More Info</a></p>` : ''}
+      ${v.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${v.links}" target="_blank">More Info</a></p>` : ''}
       <div class="flex gap-2 mt-3">
-        <button class="edit-volunteering-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
-        <button class="delete-volunteering-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+        <button class="edit-volunteering-btn gh-btn gh-btn-secondary" data-index="${index}">Edit</button>
+        <button class="delete-volunteering-btn gh-btn gh-btn-danger" data-index="${index}" data-confirm="${confirmBoxId}">Delete</button>
       </div>
-      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3">
         <p class="mb-2">Are you sure you want to delete <strong>${v.role}</strong>?</p>
         <div class="flex gap-3">
-          <button class="confirm-delete-volunteering bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
-          <button class="cancel-delete-volunteering bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+          <button class="confirm-delete-volunteering gh-btn gh-btn-danger">Yes</button>
+          <button class="cancel-delete-volunteering gh-btn gh-btn-secondary">Cancel</button>
         </div>
       </div>
     `;
@@ -487,10 +488,10 @@ async function saveVolunteeringToDB() {
   const { error } = await supabase.from('user_profiles').update({ volunteering: userVolunteering }).eq('id', userId);
   if (!error) {
     renderVolunteering();
-    fadeMessage('volunteering-status', '✅ Volunteering saved!');
+    fadeMessage('volunteering-status', 'Volunteering saved!');
   } else {
     console.error("Error saving volunteering:", error);
-    fadeMessage('volunteering-status', '❌ Error saving volunteering.');
+    fadeMessage('volunteering-status', 'Error saving volunteering.');
   }
 }
 
@@ -530,21 +531,21 @@ function renderEducation() {
   }
   userEducation.forEach((edu, index) => {
     const el = document.createElement('div');
-    el.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    el.className = 'gh-card relative'; // Applied gh-card class
     const confirmBoxId = `confirm-edu-box-${index}`;
     el.innerHTML = `
-      <h4 class="font-semibold text-blue-300">${edu.degree}</h4>
+      <h4 class="font-semibold">${edu.degree}</h4>
       <p class="text-sm">${edu.institution} — ${edu.yearFrom || ''} ${edu.yearTo ? `- ${edu.yearTo}` : ''}</p>
       ${edu.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${edu.description}</p>` : ''}
       <div class="flex gap-2 mt-3">
-        <button class="edit-education-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
-        <button class="delete-education-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+        <button class="edit-education-btn gh-btn gh-btn-secondary" data-index="${index}">Edit</button>
+        <button class="delete-education-btn gh-btn gh-btn-danger" data-index="${index}" data-confirm="${confirmBoxId}">Delete</button>
       </div>
-      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3">
         <p class="mb-2">Are you sure you want to delete <strong>${edu.degree} at ${edu.institution}</strong>?</p>
         <div class="flex gap-3">
-          <button class="confirm-delete-education bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
-          <button class="cancel-delete-education bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+          <button class="confirm-delete-education gh-btn gh-btn-danger">Yes</button>
+          <button class="cancel-delete-education gh-btn gh-btn-secondary">Cancel</button>
         </div>
       </div>
     `;
@@ -598,10 +599,10 @@ async function saveEducationToDB() {
   const { error } = await supabase.from('user_profiles').update({ education: userEducation }).eq('id', userId);
   if (!error) {
     renderEducation();
-    fadeMessage('education-status', '✅ Education saved!');
+    fadeMessage('education-status', 'Education saved!');
   } else {
     console.error("Error saving education:", error);
-    fadeMessage('education-status', '❌ Error saving education.');
+    fadeMessage('education-status', 'Error saving education.');
   }
 }
 
@@ -642,11 +643,11 @@ async function updateUserData(e) {
   };
   const { error } = await supabase.from('user_profiles').update(updateData).eq('id', userId);
   if (!error) {
-    fadeMessage('update-status', '✅ Info updated!');
+    fadeMessage('update-status', 'Info updated!');
     loadUserData();
   } else {
     console.error("Error updating profile:", error);
-    fadeMessage('update-status', '❌ Error updating info.');
+    fadeMessage('update-status', 'Error updating info.');
   }
 }
 
@@ -686,22 +687,22 @@ async function verifyOpenAIKey(key) {
 // Main function to handle CV generation
 document.getElementById('generate-cv').onclick = async () => {
   const key = document.getElementById('openai_key').value.trim();
-  const jobDesc = document.getElementById('job_desc').value.trim();
+  const jobDesc = document.getElementById('ai_job_desc').value.trim(); // Changed ID here
   const status = document.getElementById('cv-status');
 
   if (!key || !jobDesc) {
-    status.textContent = '❌ API Key or job description missing';
+    status.textContent = 'API Key or job description missing';
     return;
   }
 
-  status.textContent = '🔍 Verifying API key...';
+  status.textContent = 'Verifying API key...'; // Removed emoji
   const isValid = await verifyOpenAIKey(key);
   if (!isValid) {
-    status.textContent = '❌ Invalid OpenAI key. Please check it.';
+    status.textContent = 'Invalid OpenAI key. Please check it.';
     return;
   }
 
-  status.textContent = '📄 Generating CV...';
+  status.textContent = 'Generating CV...'; // Removed emoji
 
   const projects = currentUserProfile.projects || [];
   const skills = extractSkills(projects);
@@ -758,36 +759,87 @@ document.getElementById('generate-cv').onclick = async () => {
 
     // Check if the response is successful
     const data = await res.json(); // Parse the JSON response
-    const content = data.choices?.[0]?.message?.content || "⚠️ No response from AI.";
+    const content = data.choices?.[0]?.message?.content || "No response from AI."; // Removed emoji
     document.getElementById('cv-output').textContent = content; // Display the AI response in a <pre> box
 
     document.getElementById('download-pdf').classList.remove('hidden');
-    status.textContent = '✅ CV Ready! Displayed below.';
+    status.textContent = 'CV Ready! Displayed below.'; // Removed emoji
 
   } catch (err) {
     console.error(err);
-    status.textContent = '❌ Error generating CV.';
+    status.textContent = 'Error generating CV.';
   }
 };
 
 
 document.getElementById('logout-btn').onclick = () => {
   sessionStorage.clear();
-  location.href = 'login.html';
+  // Assuming you have a login.html or similar page
+  window.location.href = 'login.html'; // Redirect to login page after logout
 };
 
-document.getElementById('update-form').addEventListener('submit', updateUserData);
-document.getElementById('new-project-form').addEventListener('submit', addNewProject);
-document.getElementById('toggle-project-form').addEventListener('click', () => {
-  document.getElementById('new-project-form').classList.toggle('hidden');
-});
+// Initial load of user data when the page loads
+document.addEventListener('DOMContentLoaded', loadUserData);
+
+// Attach event listeners for forms and buttons
+document.getElementById('update-form').onsubmit = updateUserData;
+
+document.getElementById('new-project-form').onsubmit = addNewProject;
+document.getElementById('toggle-project-form').onclick = () => {
+    const form = document.getElementById('new-project-form');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.reset();
+        currentEditingProjectIndex = null;
+    }
+};
+
+document.getElementById('new-certificate-form').onsubmit = addNewCertificate;
+document.getElementById('toggle-certificate-form').onclick = () => {
+    const form = document.getElementById('new-certificate-form');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.reset();
+        currentEditingCertificateIndex = null;
+    }
+};
+
+document.getElementById('new-employment-form').onsubmit = addNewEmployment;
+document.getElementById('toggle-employment-form').onclick = () => {
+    const form = document.getElementById('new-employment-form');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.reset();
+        currentEditingEmploymentIndex = null;
+    }
+};
+
+document.getElementById('new-volunteering-form').onsubmit = addNewVolunteering;
+document.getElementById('toggle-volunteering-form').onclick = () => {
+    const form = document.getElementById('new-volunteering-form');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.reset();
+        currentEditingVolunteeringIndex = null;
+    }
+};
+
+document.getElementById('new-education-form').onsubmit = addNewEducation;
+document.getElementById('toggle-education-form').onclick = () => {
+    const form = document.getElementById('new-education-form');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.reset();
+        currentEditingEducationIndex = null;
+    }
+};
 
 // DOWNLOAD PDF FUNCTION
 document.getElementById('download-pdf').onclick = async () => {
   const cvElement = document.getElementById('cv-output');
   const content = cvElement.textContent.trim();
   if (!content) {
-    return alert("❌ CV content is empty.");
+    return alert("CV content is empty.");
   }
 
   // Temporarily style for rendering
@@ -808,7 +860,7 @@ document.getElementById('download-pdf').onclick = async () => {
     pdf.save('ai-cv.pdf');
   } catch (err) {
     console.error(err);
-    alert('❌ Failed to generate PDF: ' + err.message);
+    alert('Failed to generate PDF: ' + err.message);
   } finally {
     // Reset styles
     cvElement.style.background = '';
@@ -818,28 +870,3 @@ document.getElementById('download-pdf').onclick = async () => {
     cvElement.style.fontFamily = '';
   }
 };
-
-window.addEventListener('DOMContentLoaded', () => {
-  // Certificate form toggle and submit
-  document.getElementById('toggle-certificate-form').onclick = () =>
-    document.getElementById('new-certificate-form').classList.toggle('hidden');
-  document.getElementById('new-certificate-form').addEventListener('submit', addNewCertificate);
-
-  // Employment form toggle and submit
-  document.getElementById('toggle-employment-form').onclick = () =>
-    document.getElementById('new-employment-form').classList.toggle('hidden');
-  document.getElementById('new-employment-form').addEventListener('submit', addNewEmployment);
-
-  // Volunteering form toggle and submit
-  document.getElementById('toggle-volunteering-form').onclick = () =>
-    document.getElementById('new-volunteering-form').classList.toggle('hidden');
-  document.getElementById('new-volunteering-form').addEventListener('submit', addNewVolunteering);
-
-  // Education form toggle and submit
-  document.getElementById('toggle-education-form').onclick = () =>
-    document.getElementById('new-education-form').classList.toggle('hidden');
-  document.getElementById('new-education-form').addEventListener('submit', addNewEducation);
-});
-
-
-loadUserData();
