@@ -2,7 +2,7 @@ export function generateCVPrompt(userData, jobDescription) {
   const { name, email, bio, linkedin, github, skills, projects } = userData;
 
   let prompt = `
-Generate a professional and concise CV for ${name}, tailored specifically for a job with the following description:
+Generate a professional and concise CV for ${name}, specifically tailored for a job with the following description:
 
 Job Description:
 """
@@ -22,41 +22,41 @@ Skills: ${skills.join(', ')}
 
 Projects:
 ${projects.length > 0 ? projects.map(p => `
-- **${p.name}**: ${p.description}
-  ${p.demo ? `  (Demo: ${p.demo})` : ''}
-  ${p.repo ? `  (Repo: ${p.repo})` : ''}
-  ${p.skills && p.skills.length > 0 ? `  Skills: ${p.skills.join(', ')}` : ''}
+- Project Name: ${p.name}
+  Description: ${p.description}
+  ${p.demo ? `Demo: ${p.demo}` : ''}
+  ${p.repo ? `Repo: ${p.repo}` : ''}
+  ${p.skills && p.skills.length > 0 ? `Skills: ${p.skills.join(', ')}` : ''}
 `).join('\n') : 'No projects provided.'}
 ---
 
-Structure the CV with the following sections, using clear headings and bullet points where appropriate. Focus on achievements and results, using strong action verbs. Prioritize information most relevant to the job description.
+Structure the CV with the following sections. Focus on achievements and results, using strong action verbs and quantifying impact where possible. Prioritize information most relevant to the job description.
 
 **Sections to include:**
-1.  **Contact Information:** Name, Email, LinkedIn, GitHub (if provided).
-2.  **Summary/Professional Objective:** A concise paragraph (2-4 sentences) highlighting key qualifications and career goals, specifically tailored to the job description.
-3.  **Skills:** A list of relevant technical and soft skills, ideally categorized (e.g., Programming Languages, Frameworks, Tools, Soft Skills). Only include skills relevant to the job description or prominently featured in projects.
-4.  **Projects:** Detail 2-3 most relevant projects. For each project:
-    * Project Name
-    * Brief description emphasizing your role, technologies used, and quantifiable achievements/impact. Use bullet points for impact.
-    * Link to Live Demo (if applicable)
-    * Link to GitHub Repository (if applicable)
-5.  **Experience/Employment History (if available in user data, otherwise omit):**
-    * Company Name, Job Title, Dates (Start Year - End Year or "Present")
-    * 2-4 bullet points describing responsibilities and achievements. Use action verbs and quantify results.
-6.  **Certificates (if available in user data, otherwise omit):**
-    * Certificate Title, Provider, Year
-7.  **Education (if available in user data, otherwise omit):**
-    * Degree, Institution, Years (Start Year - End Year), relevant coursework/achievements (1-2 bullet points).
-8.  **Volunteering (if available in user data, otherwise omit):**
-    * Role, Organization, Dates (Start Year - End Year or "Present"), 1-2 bullet points describing contributions.
+1.  **Contact Information:** Include Name, Email, LinkedIn, and GitHub (if provided).
+2.  **Summary/Professional Objective:** A concise paragraph (2-4 sentences) highlighting key qualifications and career goals, specifically tailored to the job.
+3.  **Skills:** List relevant technical and soft skills. Group them logically if possible (e.g., Programming Languages, Frameworks, Tools).
+4.  **Projects:** Detail your most relevant projects (2-3). For each:
+    * State the Project Name.
+    * Provide a brief description, emphasizing your role, technologies used, and key achievements/impact. Use bullet points for clear impact statements.
+    * Include links to Live Demo and GitHub Repository if available.
+5.  **Experience/Employment History (if data available):**
+    * For each role, state Company Name, Job Title, and Dates (Start Year - End Year or "Present").
+    * Use 2-4 bullet points to describe responsibilities and quantifiable achievements.
+6.  **Certificates (if data available):**
+    * List Certificate Title, Provider, and Year.
+7.  **Education (if data available):**
+    * State Degree, Institution, and Years attended (Start Year - End Year). Add 1-2 bullet points for relevant coursework or achievements.
+8.  **Volunteering (if data available):**
+    * For each role, state Role, Organization, and Dates. Use 1-2 bullet points for contributions.
 
-**Formatting Guidelines:**
-* Use Markdown for headings ('#', '##', '###'), bold text (`**text**`), and bullet points (`* item` or `- item`).
-* Keep bullet points concise and impactful.
-* Ensure consistency in formatting across sections.
-* Do not include any introductory or concluding remarks outside the CV content itself.
-* If a section has no relevant data, omit it entirely from the output.
-* Limit the CV to maximum one page if possible, prioritizing the most impactful information.
+**General Guidelines:**
+* Use clear headings for each section.
+* Use bullet points for lists and impact statements within sections.
+* Keep descriptions concise and impactful.
+* Omit any section that has no relevant data.
+* Do not include any conversational text outside the CV content.
+* Strive for a one-page CV if possible by being highly selective and concise.
 `;
 
   return prompt;
