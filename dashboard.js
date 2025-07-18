@@ -5,12 +5,22 @@ import { generateCVPrompt } from './cvPrompt.js'; // Import the CV prompt genera
 
 let userId = null;
 let userProjects = [];
-let currentEditingIndex = null;
+let currentEditingProjectIndex = null;
 let projectIndexToDelete = null;
+
 let currentUserProfile = {};
+
 let userCertificates = [];
+let currentEditingCertificateIndex = null;
+let certificateIndexToDelete = null;
+
 let userEmployment = [];
+let currentEditingEmploymentIndex = null;
+let employmentIndexToDelete = null;
+
 let userVolunteering = [];
+let currentEditingVolunteeringIndex = null;
+let volunteeringIndexToDelete = null;
 
 
 // Load profile, reads the user data from the database
@@ -49,7 +59,7 @@ async function loadUserData() {
 
 }
 
-//projects
+// --- PROJECTS FUNCTIONS ---
 function renderProjects() { // Function to render user projects on the dashboard
   const container = document.getElementById('projects-list');
   container.innerHTML = ''; // Clear the container before rendering
@@ -62,7 +72,7 @@ function renderProjects() { // Function to render user projects on the dashboard
   userProjects.forEach((project, index) => { // Loop through each project and create a card
     const card = document.createElement('div');
     card.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
-    const confirmBoxId = `confirm-box-${index}`;
+    const confirmBoxId = `confirm-project-box-${index}`;
 
     card.innerHTML = `
       <h4 class="text-lg font-semibold text-blue-300">${project.name}</h4>
@@ -71,21 +81,21 @@ function renderProjects() { // Function to render user projects on the dashboard
       <p class="text-sm"><strong>GitHub:</strong> <a href="${project.repo}" target="_blank" class="text-blue-400 underline">${project.repo}</a></p>
       <p class="text-sm"><strong>Skills:</strong> ${Array.isArray(project.skills) ? project.skills.join(', ') : 'N/A'}</p>
       <div class="flex gap-2 mt-3">
-        <button class="edit-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
-        <button class="delete-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+        <button class="edit-project-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
+        <button class="delete-project-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
       </div>
       <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
         <p class="mb-2">Are you sure you want to delete <strong>${project.name}</strong>?</p>
         <div class="flex gap-3">
-          <button class="confirm-delete bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
-          <button class="cancel-delete bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+          <button class="confirm-delete-project bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
+          <button class="cancel-delete-project bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
         </div>
       </div>
     `;
     container.appendChild(card);
   });
 
-  document.querySelectorAll('.delete-btn').forEach(btn => { // Add click event to delete buttons
+  document.querySelectorAll('.delete-project-btn').forEach(btn => { // Add click event to delete buttons
     btn.onclick = (e) => { // Show confirmation box when delete button is clicked
       const index = +e.target.dataset.index;
       const boxId = e.target.dataset.confirm;
@@ -95,28 +105,29 @@ function renderProjects() { // Function to render user projects on the dashboard
     };
   });
 
-  document.querySelectorAll('.confirm-delete').forEach(btn => { // Add click event to confirm delete buttons
+  document.querySelectorAll('.confirm-delete-project').forEach(btn => { // Add click event to confirm delete buttons
     btn.onclick = async () => {
       if (projectIndexToDelete !== null) {
         userProjects.splice(projectIndexToDelete, 1); // Remove the project from the array
         projectIndexToDelete = null; // Reset the index after deletion
         await saveProjectsToDB(); // Save the updated projects to the database
+        document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden')); // Hide all confirm boxes
       }
     };
   });
 
-  document.querySelectorAll('.cancel-delete').forEach(btn => { // Add click event to cancel delete buttons
+  document.querySelectorAll('.cancel-delete-project').forEach(btn => { // Add click event to cancel delete buttons
     btn.onclick = (e) => {
       e.target.closest('.confirm-box').classList.add('hidden');
       projectIndexToDelete = null; // Reset the index if deletion is cancelled
     };
   });
 
-  document.querySelectorAll('.edit-btn').forEach(btn => { // Add click event to edit buttons
+  document.querySelectorAll('.edit-project-btn').forEach(btn => { // Add click event to edit buttons
     btn.onclick = (e) => {
       const index = +e.target.dataset.index;
       const p = userProjects[index];
-      currentEditingIndex = index;
+      currentEditingProjectIndex = index;
       // Populate the form with the project data for editing
       document.getElementById('project_name').value = p.name;
       document.getElementById('project_desc').value = p.desc;
@@ -133,6 +144,9 @@ async function saveProjectsToDB() { // Function to save user projects to the dat
   if (!error) {// If no error, reload the projects
     renderProjects();
     fadeMessage('project-status', '✅ Project saved!'); // Show success message
+  } else {
+    console.error("Error saving projects:", error);
+    fadeMessage('project-status', '❌ Error saving project.');
   }
 }
 
@@ -147,9 +161,9 @@ async function addNewProject(e) {
     skills: document.getElementById('project_skills').value.split(',').map(s => s.trim()).filter(Boolean)
   };
 
-  if (currentEditingIndex !== null) {
-    userProjects[currentEditingIndex] = newProject;
-    currentEditingIndex = null;
+  if (currentEditingProjectIndex !== null) {
+    userProjects[currentEditingProjectIndex] = newProject;
+    currentEditingProjectIndex = null;
   } else {
     userProjects.push(newProject);
   }
@@ -160,6 +174,7 @@ async function addNewProject(e) {
 }
 
 
+// --- CERTIFICATES FUNCTIONS ---
 function renderCertificates() {
   const cList = document.getElementById('certificates-list');
   cList.innerHTML = '';
@@ -167,35 +182,106 @@ function renderCertificates() {
     cList.innerHTML = '<p class="text-gray-400">No certificates yet.</p>';
     return;
   }
-  userCertificates.forEach(cert => {
+  userCertificates.forEach((cert, index) => {
     const el = document.createElement('div');
-    el.className = 'border p-4 rounded bg-gray-800';
+    el.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    const confirmBoxId = `confirm-cert-box-${index}`;
     el.innerHTML = `
       ${cert.image ? `<img src="${cert.image}" class="h-12 mb-2" alt="logo">` : ''}
-      <h4 class="font-semibold">${cert.title}</h4>
-      <p>${cert.provider} — ${cert.year}</p>
-      ${cert.description ? `<p>${cert.description}</p>` : ''}
-      ${cert.links ? `<a href="${cert.links}" target="_blank" class="text-blue-400 underline">Certificate Link</a>` : ''}
+      <h4 class="font-semibold text-blue-300">${cert.title}</h4>
+      <p class="text-sm">${cert.provider} — ${cert.year}</p>
+      ${cert.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${cert.description}</p>` : ''}
+      ${cert.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${cert.links}" target="_blank" class="text-blue-400 underline">Certificate Link</a></p>` : ''}
+      <div class="flex gap-2 mt-3">
+        <button class="edit-certificate-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
+        <button class="delete-certificate-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+      </div>
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+        <p class="mb-2">Are you sure you want to delete <strong>${cert.title}</strong>?</p>
+        <div class="flex gap-3">
+          <button class="confirm-delete-certificate bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
+          <button class="cancel-delete-certificate bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+        </div>
+      </div>
     `;
     cList.appendChild(el);
   });
+
+  document.querySelectorAll('.delete-certificate-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const index = +e.target.dataset.index;
+      const boxId = e.target.dataset.confirm;
+      certificateIndexToDelete = index;
+      document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden'));
+      document.getElementById(boxId).classList.remove('hidden');
+    };
+  });
+
+  document.querySelectorAll('.confirm-delete-certificate').forEach(btn => {
+    btn.onclick = async () => {
+      if (certificateIndexToDelete !== null) {
+        userCertificates.splice(certificateIndexToDelete, 1);
+        certificateIndexToDelete = null;
+        await saveCertificatesToDB();
+        document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden'));
+      }
+    };
+  });
+
+  document.querySelectorAll('.cancel-delete-certificate').forEach(btn => {
+    btn.onclick = (e) => {
+      e.target.closest('.confirm-box').classList.add('hidden');
+      certificateIndexToDelete = null;
+    };
+  });
+
+  document.querySelectorAll('.edit-certificate-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const index = +e.target.dataset.index;
+      const c = userCertificates[index];
+      currentEditingCertificateIndex = index;
+      document.getElementById('cert_title').value = c.title;
+      document.getElementById('cert_provider').value = c.provider;
+      document.getElementById('cert_year').value = c.year;
+      document.getElementById('cert_desc').value = c.description || '';
+      document.getElementById('new-certificate-form').classList.remove('hidden');
+    };
+  });
+}
+
+async function saveCertificatesToDB() {
+  const { error } = await supabase.from('user_profiles').update({ certificates: userCertificates }).eq('id', userId);
+  if (!error) {
+    renderCertificates();
+    fadeMessage('certificate-status', '✅ Certificate saved!');
+  } else {
+    console.error("Error saving certificates:", error);
+    fadeMessage('certificate-status', '❌ Error saving certificate.');
+  }
 }
 
 async function addNewCertificate(e) {
   e.preventDefault();
   const f = document.getElementById('new-certificate-form');
-  userCertificates.push({
+  const newCert = {
     title: f.cert_title.value,
     provider: f.cert_provider.value,
     year: f.cert_year.value,
-    description: f.cert_desc.value || '', // Added description field
+    description: f.cert_desc.value || '',
     links: f.cert_links?.value || '',
     image: f.cert_image?.value || ''
-  });
+  };
+
+  if (currentEditingCertificateIndex !== null) {
+    userCertificates[currentEditingCertificateIndex] = newCert;
+    currentEditingCertificateIndex = null;
+  } else {
+    userCertificates.push(newCert);
+  }
+
   f.reset();
   f.classList.add('hidden');
-  await supabase.from('user_profiles').update({ certificates: userCertificates }).eq('id', userId);
-  renderCertificates();
+  await saveCertificatesToDB();
 }
 
 
@@ -207,35 +293,106 @@ function renderEmployment() {
     eList.innerHTML = '<p class="text-gray-400">No employment yet.</p>';
     return;
   }
-  userEmployment.forEach(job => {
+  userEmployment.forEach((job, index) => {
     const el = document.createElement('div');
-    el.className = 'border p-4 rounded bg-gray-800';
+    el.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    const confirmBoxId = `confirm-job-box-${index}`;
     el.innerHTML = `
       ${job.image ? `<img src="${job.image}" class="h-12 mb-2" alt="logo">` : ''}
-      <h4 class="font-semibold">${job.title}</h4>
-      <p>${job.company} — ${job.year}</p>
-      ${job.description ? `<p>${job.description}</p>` : ''}
-      ${job.links ? `<a href="${job.links}" target="_blank" class="text-blue-400 underline">More Info</a>` : ''}
+      <h4 class="font-semibold text-blue-300">${job.title}</h4>
+      <p class="text-sm">${job.company} — ${job.year}</p>
+      ${job.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${job.description}</p>` : ''}
+      ${job.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${job.links}" target="_blank" class="text-blue-400 underline">More Info</a></p>` : ''}
+      <div class="flex gap-2 mt-3">
+        <button class="edit-employment-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
+        <button class="delete-employment-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+      </div>
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+        <p class="mb-2">Are you sure you want to delete <strong>${job.title}</strong>?</p>
+        <div class="flex gap-3">
+          <button class="confirm-delete-employment bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
+          <button class="cancel-delete-employment bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+        </div>
+      </div>
     `;
     eList.appendChild(el);
   });
+
+  document.querySelectorAll('.delete-employment-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const index = +e.target.dataset.index;
+      const boxId = e.target.dataset.confirm;
+      employmentIndexToDelete = index;
+      document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden'));
+      document.getElementById(boxId).classList.remove('hidden');
+    };
+  });
+
+  document.querySelectorAll('.confirm-delete-employment').forEach(btn => {
+    btn.onclick = async () => {
+      if (employmentIndexToDelete !== null) {
+        userEmployment.splice(employmentIndexToDelete, 1);
+        employmentIndexToDelete = null;
+        await saveEmploymentToDB();
+        document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden'));
+      }
+    };
+  });
+
+  document.querySelectorAll('.cancel-delete-employment').forEach(btn => {
+    btn.onclick = (e) => {
+      e.target.closest('.confirm-box').classList.add('hidden');
+      employmentIndexToDelete = null;
+    };
+  });
+
+  document.querySelectorAll('.edit-employment-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const index = +e.target.dataset.index;
+      const j = userEmployment[index];
+      currentEditingEmploymentIndex = index;
+      document.getElementById('job_title').value = j.title;
+      document.getElementById('job_company').value = j.company;
+      document.getElementById('job_year').value = j.year;
+      document.getElementById('job_desc').value = j.description || '';
+      document.getElementById('new-employment-form').classList.remove('hidden');
+    };
+  });
+}
+
+async function saveEmploymentToDB() {
+  const { error } = await supabase.from('user_profiles').update({ employment: userEmployment }).eq('id', userId);
+  if (!error) {
+    renderEmployment();
+    fadeMessage('employment-status', '✅ Employment saved!');
+  } else {
+    console.error("Error saving employment:", error);
+    fadeMessage('employment-status', '❌ Error saving employment.');
+  }
 }
 
 async function addNewEmployment(e) {
   e.preventDefault();
   const f = document.getElementById('new-employment-form');
-  userEmployment.push({
+  const newJob = {
     title: f.job_title.value,
     company: f.job_company.value,
     year: f.job_year.value,
-    description: f.job_desc.value || '', // Added description field
+    description: f.job_desc.value || '',
     links: f.job_links?.value || '',
     image: f.job_image?.value || ''
-  });
+  };
+
+  if (currentEditingEmploymentIndex !== null) {
+    userEmployment[currentEditingEmploymentIndex] = newJob;
+    currentEditingEmploymentIndex = null;
+  } else {
+    userEmployment.push(newJob);
+  }
+
   f.reset();
   f.classList.add('hidden');
-  await supabase.from('user_profiles').update({ employment: userEmployment }).eq('id', userId);
-  renderEmployment();
+  await saveEmploymentToDB();
 }
 
 
@@ -247,35 +404,82 @@ function renderVolunteering() {
     vList.innerHTML = '<p class="text-gray-400">No volunteering yet.</p>';
     return;
   }
-  userVolunteering.forEach(v => {
+  userVolunteering.forEach((v, index) => {
     const el = document.createElement('div');
-    el.className = 'border p-4 rounded bg-gray-800';
+    el.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    const confirmBoxId = `confirm-vol-box-${index}`;
     el.innerHTML = `
       ${v.image ? `<img src="${v.image}" class="h-12 mb-2" alt="logo">` : ''}
-      <h4 class="font-semibold">${v.role}</h4>
-      <p>${v.org} — ${v.year}</p>
-      ${v.description ? `<p>${v.description}</p>` : ''}
-      ${v.links ? `<a href="${v.links}" target="_blank" class="text-blue-400 underline">More Info</a>` : ''}
+      <h4 class="font-semibold text-blue-300">${v.role}</h4>
+      <p class="text-sm">${v.org} — ${v.year}</p>
+      ${v.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${v.description}</p>` : ''}
+      ${v.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${v.links}" target="_blank" class="text-blue-400 underline">More Info</a></p>` : ''}
+      <div class="flex gap-2 mt-3">
+        <button class="edit-volunteering-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
+        <button class="delete-volunteering-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+      </div>
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+        <p class="mb-2">Are you sure you want to delete <strong>${v.role}</strong>?</p>
+        <div class="flex gap-3">
+          <button class="confirm-delete-volunteering bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
+          <button class="cancel-delete-volunteering bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+        </div>
+      </div>
     `;
     vList.appendChild(el);
   });
+
+  document.querySelectorAll('.delete-volunteering-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const index = +e.target.dataset.index;
+      const boxId = e.target.dataset.confirm;
+      volunteeringIndexToDelete = index;
+      document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden'));
+      document.getElementById(boxId).classList.remove('hidden');
+    };
+  });
+
+  document.querySelectorAll('.confirm-delete-volunteering').forEach(btn => {
+    btn.onclick = async () => {
+      if (volunteeringIndexToDelete !== null) {
+        userVolunteering.splice(volunteeringIndexToDelete, 1);
+        volunteeringIndexToDelete = null;
+        await saveVolunteeringToDB();
+        document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden'));
+      }
+    };
+  });
+
+  document.querySelectorAll('.cancel-delete-volunteering').forEach(btn => {
+    btn.onclick = (e) => {
+      e.target.closest('.confirm-box').classList.add('hidden');
+      volunteeringIndexToDelete = null;
+    };
+  });
+
+  document.querySelectorAll('.edit-volunteering-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const index = +e.target.dataset.index;
+      const v = userVolunteering[index];
+      currentEditingVolunteeringIndex = index;
+      document.getElementById('vol_role').value = v.role;
+      document.getElementById('vol_org').value = v.org;
+      document.getElementById('vol_year').value = v.year;
+      document.getElementById('vol_desc').value = v.description || '';
+      document.getElementById('new-volunteering-form').classList.remove('hidden');
+    };
+  });
 }
 
-async function addNewVolunteering(e) {
-  e.preventDefault();
-  const f = document.getElementById('new-volunteering-form');
-  userVolunteering.push({
-    role: f.vol_role.value,
-    org: f.vol_org.value,
-    year: f.vol_year.value,
-    description: f.vol_desc.value || '', // Added description field
-    links: f.vol_links?.value || '',
-    image: f.vol_image?.value || ''
-  });
-  f.reset();
-  f.classList.add('hidden');
-  await supabase.from('user_profiles').update({ volunteering: userVolunteering }).eq('id', userId);
-  renderVolunteering();
+async function saveVolunteeringToDB() {
+  const { error } = await supabase.from('user_profiles').update({ volunteering: userVolunteering }).eq('id', userId);
+  if (!error) {
+    renderVolunteering();
+    fadeMessage('volunteering-status', '✅ Volunteering saved!');
+  } else {
+    console.error("Error saving volunteering:", error);
+    fadeMessage('volunteering-status', '❌ Error saving volunteering.');
+  }
 }
 
 
@@ -294,6 +498,9 @@ async function updateUserData(e) {
   if (!error) {
     fadeMessage('update-status', '✅ Info updated!');
     loadUserData();
+  } else {
+    console.error("Error updating profile:", error);
+    fadeMessage('update-status', '❌ Error updating info.');
   }
 }
 

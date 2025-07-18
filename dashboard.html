@@ -34,8 +34,11 @@
         <input id="cert_title" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Certificate Title" required />
         <input id="cert_provider" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Provider" required />
         <input id="cert_year" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year" required />
-        <textarea id="cert_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea> <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Certificate</button>
+        <textarea id="cert_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Certificate</button>
       </form>
+      <p id="certificate-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
+
 
       <h3 class="text-xl font-semibold text-blue-300 mt-10">💼 Employment</h3>
       <div id="employment-list" class="mt-4 space-y-4"></div>
@@ -44,8 +47,11 @@
         <input id="job_title" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Job Title" required />
         <input id="job_company" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Company" required />
         <input id="job_year" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year" required />
-        <textarea id="job_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea> <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Job</button>
+        <textarea id="job_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Job</button>
       </form>
+      <p id="employment-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
+
 
       <h3 class="text-xl font-semibold text-blue-300 mt-10">🤝 Volunteering</h3>
       <div id="volunteering-list" class="mt-4 space-y-4"></div>
@@ -54,8 +60,11 @@
         <input id="vol_role" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Role or Title" required />
         <input id="vol_org" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Organization" required />
         <input id="vol_year" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year" required />
-        <textarea id="vol_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea> <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Volunteering</button>
+        <textarea id="vol_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Volunteering</button>
       </form>
+      <p id="volunteering-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
+
     </div>
 
     <div class="md:w-1/2 p-6 bg-gray-800 overflow-auto">
@@ -85,7 +94,8 @@
         <input id="project_skills" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Skills (comma-separated)" />
         <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Project</button>
       </form>
-      
+      <p id="project-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
+
       <h3 class="text-xl font-semibold text-green-300 mt-10">🤖 AI CV Generator</h3>
       <div class="space-y-3 bg-gray-900 p-4 rounded mt-4">
         <input id="openai_key" type="password" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="🔑 OpenAI API Key" />
