@@ -1,77 +1,63 @@
 export function generateCVPrompt(userData, jobDescription) {
-  const {
-    name,
-    email,
-    github,
-    linkedin,
-    portfolio,
-    bio = '',
-    skills = [],
-    projects = []
-  } = userData;
+  const { name, email, bio, linkedin, github, skills, projects } = userData;
 
-  const prompt = [];
+  let prompt = `
+Generate a professional and concise CV for ${name}, tailored specifically for a job with the following description:
 
-  // 1. Establish User's Core Profile and Strengths FIRST
-  prompt.push(`--- User Profile ---`);
-  if (name) prompt.push(`Name: ${name}`);
-  if (email) prompt.push(`Email: ${email}`);
-  if (github) prompt.push(`GitHub: ${github}`);
-  if (linkedin) prompt.push(`LinkedIn: ${linkedin}`);
-  if (portfolio) prompt.push(`Portfolio: ${portfolio}`);
-  if (bio) prompt.push(`Bio:\n${bio}`);
+Job Description:
+"""
+${jobDescription}
+"""
 
-  if (skills.length) {
-    prompt.push(`Skills:\n${skills.join(', ')}`);
-  }
+Use the following candidate information:
 
-  if (projects.length) {
-    prompt.push(`Relevant Projects (Original Data - DO NOT CHANGE NAMES OR CORE DESCRIPTIONS):\n`);
-    projects.forEach((p, i) => {
-      prompt.push(`Project ${i + 1}:
-Name: ${p.name}
-Description: ${p.description}
-Live Demo: ${p.demo || 'N/A'}
-GitHub: ${p.repo || 'N/A'}
-Skills: ${Array.isArray(p.skills) ? p.skills.join(', ') : 'N/A'}
-`);
-    });
-  }
+---
+Candidate Profile:
+Name: ${name}
+Email: ${email}
+${linkedin ? `LinkedIn: ${linkedin}` : ''}
+${github ? `GitHub: ${github}` : ''}
+Bio: ${bio}
+Skills: ${skills.join(', ')}
 
-  // 2. Introduce the Job Context
-  prompt.push(`\n--- Job Application Details ---`);
-  prompt.push(`The user is applying for the following job:\n"${jobDescription}"\n`);
+Projects:
+${projects.length > 0 ? projects.map(p => `
+- **${p.name}**: ${p.description}
+  ${p.demo ? `  (Demo: ${p.demo})` : ''}
+  ${p.repo ? `  (Repo: ${p.repo})` : ''}
+  ${p.skills && p.skills.length > 0 ? `  Skills: ${p.skills.join(', ')}` : ''}
+`).join('\n') : 'No projects provided.'}
+---
 
-  // 3. Clear Instructions for GPT - Emphasize User Data, then Relevance
-  prompt.push(`Based *strictly* on the "User Profile" data provided above (Bio, Skills, and "Relevant Projects" original descriptions), write a clean, professional, plain-text CV.
+Structure the CV with the following sections, using clear headings and bullet points where appropriate. Focus on achievements and results, using strong action verbs. Prioritize information most relevant to the job description.
 
-Your primary goal is to present the user's qualifications clearly and concisely.
-Your secondary goal is to subtly highlight how the user's existing skills and project achievements are relevant to the job description, *without inventing or exaggerating*.
+**Sections to include:**
+1.  **Contact Information:** Name, Email, LinkedIn, GitHub (if provided).
+2.  **Summary/Professional Objective:** A concise paragraph (2-4 sentences) highlighting key qualifications and career goals, specifically tailored to the job description.
+3.  **Skills:** A list of relevant technical and soft skills, ideally categorized (e.g., Programming Languages, Frameworks, Tools, Soft Skills). Only include skills relevant to the job description or prominently featured in projects.
+4.  **Projects:** Detail 2-3 most relevant projects. For each project:
+    * Project Name
+    * Brief description emphasizing your role, technologies used, and quantifiable achievements/impact. Use bullet points for impact.
+    * Link to Live Demo (if applicable)
+    * Link to GitHub Repository (if applicable)
+5.  **Experience/Employment History (if available in user data, otherwise omit):**
+    * Company Name, Job Title, Dates (Start Year - End Year or "Present")
+    * 2-4 bullet points describing responsibilities and achievements. Use action verbs and quantify results.
+6.  **Certificates (if available in user data, otherwise omit):**
+    * Certificate Title, Provider, Year
+7.  **Education (if available in user data, otherwise omit):**
+    * Degree, Institution, Years (Start Year - End Year), relevant coursework/achievements (1-2 bullet points).
+8.  **Volunteering (if available in user data, otherwise omit):**
+    * Role, Organization, Dates (Start Year - End Year or "Present"), 1-2 bullet points describing contributions.
 
-The CV should be structured as follows:
+**Formatting Guidelines:**
+* Use Markdown for headings ('#', '##', '###'), bold text (`**text**`), and bullet points (`* item` or `- item`).
+* Keep bullet points concise and impactful.
+* Ensure consistency in formatting across sections.
+* Do not include any introductory or concluding remarks outside the CV content itself.
+* If a section has no relevant data, omit it entirely from the output.
+* Limit the CV to maximum one page if possible, prioritizing the most impactful information.
+`;
 
-1.  Candidate Info: Full name and contact (email, GitHub, LinkedIn, Portfolio - include if provided)
-2.  Short Professional Summary (Based on Bio, emphasizing key strengths)
-3.  Education (Placeholder for now, as it's not in userData, but keep structure)
-4.  Technical Skills (Grouped by topic if possible, directly from user's skills)
-5.  1–3 Key Projects (Choose the most relevant ones. For each project):
-    * Project Name (MUST be exactly as provided in "Original Data")
-    * A concise description (1-2 sentences) that *summarizes the original project description* and *briefly connects its relevance* to the job's technical requirements. Focus on what the user *did* and *achieved*.
-    * GitHub link (if present, otherwise omit)
-    * Live Demo link (if present, otherwise omit)
-    * Skills used (list directly from original data)
-
-Strict rules for CV output:
--   DO NOT invent or rename projects. Use the "Project Name" exactly as given.
--   DO NOT add generic summaries or phrases like "Proven ability to..." unless directly inferable from the provided bio/projects.
--   For project descriptions: Summarize the *original* description. Only *briefly* hint at job relevance if a clear, direct connection exists.
--   If GitHub or demo links are missing, OMIT the field entirely (do not say "N/A").
--   Output a clean, plain-text CV directly.
--   DO NOT use markdown (except for headings like "Professional Summary"), emojis, or decorative symbols.
--   DO NOT add any explanations, comments, or conversational text.
-
-Now, write the final CV output.`
-  );
-
-  return prompt.join('\n');
+  return prompt;
 }
