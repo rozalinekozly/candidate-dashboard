@@ -1,6 +1,6 @@
 import { supabase } from './db.js'; // Import the Supabase client
 import { generateCVPrompt } from './cvPrompt.js'; // Import the CV prompt generator
-//import { generatePDF } from './cvPdfGenerator.js'; // Import the PDF generator function
+//import { generatePDF } = './cvPdfGenerator.js'; // Import the PDF generator function
 
 
 let userId = null;
@@ -189,7 +189,7 @@ function renderCertificates() {
     el.innerHTML = `
       ${cert.image ? `<img src="${cert.image}" class="h-12 mb-2" alt="logo">` : ''}
       <h4 class="font-semibold text-blue-300">${cert.title}</h4>
-      <p class="text-sm">${cert.provider} — ${cert.year}</p>
+      <p class="text-sm">${cert.provider} — ${cert.yearFrom || ''} ${cert.yearTo ? `- ${cert.yearTo}` : ''}</p>
       ${cert.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${cert.description}</p>` : ''}
       ${cert.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${cert.links}" target="_blank" class="text-blue-400 underline">Certificate Link</a></p>` : ''}
       <div class="flex gap-2 mt-3">
@@ -242,7 +242,8 @@ function renderCertificates() {
       currentEditingCertificateIndex = index;
       document.getElementById('cert_title').value = c.title;
       document.getElementById('cert_provider').value = c.provider;
-      document.getElementById('cert_year').value = c.year;
+      document.getElementById('cert_year_from').value = c.yearFrom || '';
+      document.getElementById('cert_year_to').value = c.yearTo || '';
       document.getElementById('cert_desc').value = c.description || '';
       document.getElementById('new-certificate-form').classList.remove('hidden');
     };
@@ -266,7 +267,8 @@ async function addNewCertificate(e) {
   const newCert = {
     title: f.cert_title.value,
     provider: f.cert_provider.value,
-    year: f.cert_year.value,
+    yearFrom: f.cert_year_from.value,
+    yearTo: f.cert_year_to.value,
     description: f.cert_desc.value || '',
     links: f.cert_links?.value || '',
     image: f.cert_image?.value || ''
@@ -300,7 +302,7 @@ function renderEmployment() {
     el.innerHTML = `
       ${job.image ? `<img src="${job.image}" class="h-12 mb-2" alt="logo">` : ''}
       <h4 class="font-semibold text-blue-300">${job.title}</h4>
-      <p class="text-sm">${job.company} — ${job.year}</p>
+      <p class="text-sm">${job.company} — ${job.yearFrom || ''} ${job.yearTo ? `- ${job.yearTo}` : ''}</p>
       ${job.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${job.description}</p>` : ''}
       ${job.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${job.links}" target="_blank" class="text-blue-400 underline">More Info</a></p>` : ''}
       <div class="flex gap-2 mt-3">
@@ -353,7 +355,8 @@ function renderEmployment() {
       currentEditingEmploymentIndex = index;
       document.getElementById('job_title').value = j.title;
       document.getElementById('job_company').value = j.company;
-      document.getElementById('job_year').value = j.year;
+      document.getElementById('job_year_from').value = j.yearFrom || '';
+      document.getElementById('job_year_to').value = j.yearTo || '';
       document.getElementById('job_desc').value = j.description || '';
       document.getElementById('new-employment-form').classList.remove('hidden');
     };
@@ -377,7 +380,8 @@ async function addNewEmployment(e) {
   const newJob = {
     title: f.job_title.value,
     company: f.job_company.value,
-    year: f.job_year.value,
+    yearFrom: f.job_year_from.value,
+    yearTo: f.job_year_to.value,
     description: f.job_desc.value || '',
     links: f.job_links?.value || '',
     image: f.job_image?.value || ''
@@ -411,7 +415,7 @@ function renderVolunteering() {
     el.innerHTML = `
       ${v.image ? `<img src="${v.image}" class="h-12 mb-2" alt="logo">` : ''}
       <h4 class="font-semibold text-blue-300">${v.role}</h4>
-      <p class="text-sm">${v.org} — ${v.year}</p>
+      <p class="text-sm">${v.org} — ${v.yearFrom || ''} ${v.yearTo ? `- ${v.yearTo}` : ''}</p>
       ${v.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${v.description}</p>` : ''}
       ${v.links ? `<p class="text-sm"><strong>Link:</strong> <a href="${v.links}" target="_blank" class="text-blue-400 underline">More Info</a></p>` : ''}
       <div class="flex gap-2 mt-3">
@@ -464,7 +468,8 @@ function renderVolunteering() {
       currentEditingVolunteeringIndex = index;
       document.getElementById('vol_role').value = v.role;
       document.getElementById('vol_org').value = v.org;
-      document.getElementById('vol_year').value = v.year;
+      document.getElementById('vol_year_from').value = v.yearFrom || '';
+      document.getElementById('vol_year_to').value = v.yearTo || '';
       document.getElementById('vol_desc').value = v.description || '';
       document.getElementById('new-volunteering-form').classList.remove('hidden');
     };
@@ -480,6 +485,31 @@ async function saveVolunteeringToDB() {
     console.error("Error saving volunteering:", error);
     fadeMessage('volunteering-status', '❌ Error saving volunteering.');
   }
+}
+
+async function addNewVolunteering(e) {
+  e.preventDefault();
+  const f = document.getElementById('new-volunteering-form');
+  const newVol = {
+    role: f.vol_role.value,
+    org: f.vol_org.value,
+    yearFrom: f.vol_year_from.value,
+    yearTo: f.vol_year_to.value,
+    description: f.vol_desc.value || '',
+    links: f.vol_links?.value || '',
+    image: f.vol_image?.value || ''
+  };
+
+  if (currentEditingVolunteeringIndex !== null) {
+    userVolunteering[currentEditingVolunteeringIndex] = newVol;
+    currentEditingVolunteeringIndex = null;
+  } else {
+    userVolunteering.push(newVol);
+  }
+
+  f.reset();
+  f.classList.add('hidden');
+  await saveVolunteeringToDB();
 }
 
 
