@@ -40,12 +40,12 @@ async function loadUserData() {
   userProjects = Array.isArray(data.projects) ? data.projects : []; // Ensure projects is an array
   renderProjects(); // Render the projects on the page
   userCertificates = Array.isArray(data.certificates) ? data.certificates : [];
-userEmployment = Array.isArray(data.employment) ? data.employment : [];
-userVolunteering = Array.isArray(data.volunteering) ? data.volunteering : [];
+  userEmployment = Array.isArray(data.employment) ? data.employment : [];
+  userVolunteering = Array.isArray(data.volunteering) ? data.volunteering : [];
 
-renderEmployment(); // Render employment history
-renderCertificates(); // Render certificates
-renderVolunteering(); // Render volunteering experiences
+  renderEmployment(); // Render employment history
+  renderCertificates(); // Render certificates
+  renderVolunteering(); // Render volunteering experiences
 
 }
 
@@ -188,17 +188,15 @@ async function addNewCertificate(e) {
     title: f.cert_title.value,
     provider: f.cert_provider.value,
     year: f.cert_year.value,
-    description: f.cert_desc?.value || '',
+    description: f.cert_desc.value || '', // Added description field
     links: f.cert_links?.value || '',
     image: f.cert_image?.value || ''
   });
-  f.reset(); f.classList.add('hidden');
+  f.reset();
+  f.classList.add('hidden');
   await supabase.from('user_profiles').update({ certificates: userCertificates }).eq('id', userId);
   renderCertificates();
 }
-
-
-
 
 
 // --- EMPLOYMENT FUNCTIONS ---
@@ -230,17 +228,15 @@ async function addNewEmployment(e) {
     title: f.job_title.value,
     company: f.job_company.value,
     year: f.job_year.value,
-    description: f.job_desc?.value || '',
+    description: f.job_desc.value || '', // Added description field
     links: f.job_links?.value || '',
     image: f.job_image?.value || ''
   });
-  f.reset(); f.classList.add('hidden');
+  f.reset();
+  f.classList.add('hidden');
   await supabase.from('user_profiles').update({ employment: userEmployment }).eq('id', userId);
   renderEmployment();
 }
-
-
-
 
 
 // --- VOLUNTEERING FUNCTIONS ---
@@ -272,11 +268,12 @@ async function addNewVolunteering(e) {
     role: f.vol_role.value,
     org: f.vol_org.value,
     year: f.vol_year.value,
-    description: f.vol_desc?.value || '',
+    description: f.vol_desc.value || '', // Added description field
     links: f.vol_links?.value || '',
     image: f.vol_image?.value || ''
   });
-  f.reset(); f.classList.add('hidden');
+  f.reset();
+  f.classList.add('hidden');
   await supabase.from('user_profiles').update({ volunteering: userVolunteering }).eq('id', userId);
   renderVolunteering();
 }
@@ -357,38 +354,38 @@ document.getElementById('generate-cv').onclick = async () => {
   const skills = extractSkills(projects);
 
   // Generate the CV prompt using user data and job description
-// Filter relevant projects based on keywords in the job description
-const filteredProjects = projects.filter(p => {
-  const jobText = jobDesc.toLowerCase();
-  const projectText = `${p.name} ${p.desc} ${p.skills?.join(' ')}`.toLowerCase();
+  // Filter relevant projects based on keywords in the job description
+  const filteredProjects = projects.filter(p => {
+    const jobText = jobDesc.toLowerCase();
+    const projectText = `${p.name} ${p.desc} ${p.skills?.join(' ')}`.toLowerCase();
 
-  return (
-    jobText.includes('web') && projectText.includes('javascript') ||
-    jobText.includes('frontend') && projectText.includes('react') ||
-    jobText.includes('backend') && projectText.includes('node') ||
-    jobText.includes('api') && projectText.includes('api') ||
-    jobText.includes('data') && projectText.includes('sql') ||
-    jobText.includes('automation') && projectText.includes('automation') ||
-    jobText.includes('testing') && projectText.includes('qa') ||
-    jobText.includes('ai') && projectText.includes('openai')
-  );
-});
+    return (
+      jobText.includes('web') && projectText.includes('javascript') ||
+      jobText.includes('frontend') && projectText.includes('react') ||
+      jobText.includes('backend') && projectText.includes('node') ||
+      jobText.includes('api') && projectText.includes('api') ||
+      jobText.includes('data') && projectText.includes('sql') ||
+      jobText.includes('automation') && projectText.includes('automation') ||
+      jobText.includes('testing') && projectText.includes('qa') ||
+      jobText.includes('ai') && projectText.includes('openai')
+    );
+  });
 
-const prompt = generateCVPrompt({
-  name: currentUserProfile.full_name || '',
-  email: currentUserProfile.email || '',
-  bio: currentUserProfile.bio || '',
-  linkedin: currentUserProfile.linkedin_url || '',
-  github: currentUserProfile.github_url || '',
-  skills,
-  projects: filteredProjects.map(p => ({
-    name: p.name,
-    description: p.desc,
-    demo: p.demo,
-    repo: p.repo,
-    skills: Array.isArray(p.skills) ? p.skills : []
-  }))
-}, jobDesc);
+  const prompt = generateCVPrompt({
+    name: currentUserProfile.full_name || '',
+    email: currentUserProfile.email || '',
+    bio: currentUserProfile.bio || '',
+    linkedin: currentUserProfile.linkedin_url || '',
+    github: currentUserProfile.github_url || '',
+    skills,
+    projects: filteredProjects.map(p => ({
+      name: p.name,
+      description: p.desc,
+      demo: p.demo,
+      repo: p.repo,
+      skills: Array.isArray(p.skills) ? p.skills : []
+    }))
+  }, jobDesc);
 
 
   // Make the API request to OpenAI
@@ -409,10 +406,10 @@ const prompt = generateCVPrompt({
     // Check if the response is successful
     const data = await res.json(); // Parse the JSON response
     const content = data.choices?.[0]?.message?.content || "⚠️ No response from AI.";
-document.getElementById('cv-output').textContent = content; // Display the AI response in a <pre> box
+    document.getElementById('cv-output').textContent = content; // Display the AI response in a <pre> box
 
-document.getElementById('download-pdf').classList.remove('hidden');
-status.textContent = '✅ CV Ready! Displayed below.';
+    document.getElementById('download-pdf').classList.remove('hidden');
+    status.textContent = '✅ CV Ready! Displayed below.';
 
   } catch (err) {
     console.error(err);
@@ -432,7 +429,7 @@ document.getElementById('toggle-project-form').addEventListener('click', () => {
   document.getElementById('new-project-form').classList.toggle('hidden');
 });
 
-// DOWNLOAD PDF FUNCTION 
+// DOWNLOAD PDF FUNCTION
 document.getElementById('download-pdf').onclick = async () => {
   const cvElement = document.getElementById('cv-output');
   const content = cvElement.textContent.trim();
