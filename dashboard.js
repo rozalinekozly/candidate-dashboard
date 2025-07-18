@@ -22,6 +22,10 @@ let userVolunteering = [];
 let currentEditingVolunteeringIndex = null;
 let volunteeringIndexToDelete = null;
 
+let userEducation = [];
+let currentEditingEducationIndex = null;
+let educationIndexToDelete = null;
+
 
 // Load profile, reads the user data from the database
 async function loadUserData() {
@@ -52,10 +56,13 @@ async function loadUserData() {
   userCertificates = Array.isArray(data.certificates) ? data.certificates : [];
   userEmployment = Array.isArray(data.employment) ? data.employment : [];
   userVolunteering = Array.isArray(data.volunteering) ? data.volunteering : [];
+  userEducation = Array.isArray(data.education) ? data.education : [];
+
 
   renderEmployment(); // Render employment history
   renderCertificates(); // Render certificates
   renderVolunteering(); // Render volunteering experiences
+  renderEducation(); // Render education history
 
 }
 
@@ -513,6 +520,115 @@ async function addNewVolunteering(e) {
 }
 
 
+// --- EDUCATION FUNCTIONS ---
+function renderEducation() {
+  const eList = document.getElementById('education-list');
+  eList.innerHTML = '';
+  if (!userEducation.length) {
+    eList.innerHTML = '<p class="text-gray-400">No education entries yet.</p>';
+    return;
+  }
+  userEducation.forEach((edu, index) => {
+    const el = document.createElement('div');
+    el.className = 'border border-gray-700 p-4 rounded bg-gray-950 relative';
+    const confirmBoxId = `confirm-edu-box-${index}`;
+    el.innerHTML = `
+      <h4 class="font-semibold text-blue-300">${edu.degree}</h4>
+      <p class="text-sm">${edu.institution} — ${edu.yearFrom || ''} ${edu.yearTo ? `- ${edu.yearTo}` : ''}</p>
+      ${edu.description ? `<p class="text-sm mt-1"><strong>Description:</strong> ${edu.description}</p>` : ''}
+      <div class="flex gap-2 mt-3">
+        <button class="edit-education-btn bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-black" data-index="${index}">✏️ Edit</button>
+        <button class="delete-education-btn bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white" data-index="${index}" data-confirm="${confirmBoxId}">🗑️ Delete</button>
+      </div>
+      <div id="${confirmBoxId}" class="confirm-box hidden mt-3 bg-gray-800 text-sm text-white border border-red-500 p-3 rounded">
+        <p class="mb-2">Are you sure you want to delete <strong>${edu.degree} at ${edu.institution}</strong>?</p>
+        <div class="flex gap-3">
+          <button class="confirm-delete-education bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white">✅ Yes</button>
+          <button class="cancel-delete-education bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white">❌ Cancel</button>
+        </div>
+      </div>
+    `;
+    eList.appendChild(el);
+  });
+
+  document.querySelectorAll('.delete-education-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const index = +e.target.dataset.index;
+      const boxId = e.target.dataset.confirm;
+      educationIndexToDelete = index;
+      document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden'));
+      document.getElementById(boxId).classList.remove('hidden');
+    };
+  });
+
+  document.querySelectorAll('.confirm-delete-education').forEach(btn => {
+    btn.onclick = async () => {
+      if (educationIndexToDelete !== null) {
+        userEducation.splice(educationIndexToDelete, 1);
+        educationIndexToDelete = null;
+        await saveEducationToDB();
+        document.querySelectorAll('.confirm-box').forEach(el => el.classList.add('hidden'));
+      }
+    };
+  });
+
+  document.querySelectorAll('.cancel-delete-education').forEach(btn => {
+    btn.onclick = (e) => {
+      e.target.closest('.confirm-box').classList.add('hidden');
+      educationIndexToDelete = null;
+    };
+  });
+
+  document.querySelectorAll('.edit-education-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      const index = +e.target.dataset.index;
+      const edu = userEducation[index];
+      currentEditingEducationIndex = index;
+      document.getElementById('edu_degree').value = edu.degree;
+      document.getElementById('edu_institution').value = edu.institution;
+      document.getElementById('edu_year_from').value = edu.yearFrom || '';
+      document.getElementById('edu_year_to').value = edu.yearTo || '';
+      document.getElementById('edu_desc').value = edu.description || '';
+      document.getElementById('new-education-form').classList.remove('hidden');
+    };
+  });
+}
+
+async function saveEducationToDB() {
+  const { error } = await supabase.from('user_profiles').update({ education: userEducation }).eq('id', userId);
+  if (!error) {
+    renderEducation();
+    fadeMessage('education-status', '✅ Education saved!');
+  } else {
+    console.error("Error saving education:", error);
+    fadeMessage('education-status', '❌ Error saving education.');
+  }
+}
+
+async function addNewEducation(e) {
+  e.preventDefault();
+  const f = document.getElementById('new-education-form');
+  const newEdu = {
+    degree: f.edu_degree.value,
+    institution: f.edu_institution.value,
+    yearFrom: f.edu_year_from.value,
+    yearTo: f.edu_year_to.value,
+    description: f.edu_desc.value || '',
+  };
+
+  if (currentEditingEducationIndex !== null) {
+    userEducation[currentEditingEducationIndex] = newEdu;
+    currentEditingEducationIndex = null;
+  } else {
+    userEducation.push(newEdu);
+  }
+
+  f.reset();
+  f.classList.add('hidden');
+  await saveEducationToDB();
+}
+
+
 // Update user profile data in the database
 async function updateUserData(e) {
   e.preventDefault();
@@ -718,6 +834,11 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('toggle-volunteering-form').onclick = () =>
     document.getElementById('new-volunteering-form').classList.toggle('hidden');
   document.getElementById('new-volunteering-form').addEventListener('submit', addNewVolunteering);
+
+  // Education form toggle and submit
+  document.getElementById('toggle-education-form').onclick = () =>
+    document.getElementById('new-education-form').classList.toggle('hidden');
+  document.getElementById('new-education-form').addEventListener('submit', addNewEducation);
 });
 
 

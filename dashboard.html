@@ -3,111 +3,363 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hi-Tech Dashboard</title>
+  <title>Developer Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    /* Custom Colors (based on GitHub Dark theme) */
+    :root {
+      --gh-bg-primary: #0D1117; /* Main background */
+      --gh-bg-secondary: #161B22; /* Panel background */
+      --gh-bg-tertiary: #21262D; /* Input/Card background */
+      --gh-text-primary: #C9D1D9; /* Default text color */
+      --gh-text-secondary: #8B949E; /* Muted text */
+      --gh-blue: #58A6FF; /* Links, primary actions */
+      --gh-green: #2EA043; /* Success, save buttons */
+      --gh-red: #F85149; /* Danger, logout buttons */
+      --gh-border: #30363D; /* Subtle borders */
+    }
+
     body {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background-color: var(--gh-bg-primary);
+      color: var(--gh-text-primary);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Main Container Mimicking GitHub Repo Layout */
+    .gh-page-container {
+      max-width: 1280px; /* Wider than before, more like a full page */
+      margin: 2rem auto; /* Centered with some vertical margin */
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem; /* Space between sections */
+    }
+
+    /* Main Content Area */
+    .gh-main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      flex-grow: 1;
+    }
+
+    /* GitHub-style Panels */
+    .gh-panel {
+      background-color: var(--gh-bg-secondary);
+      border: 1px solid var(--gh-border);
+      border-radius: 6px;
+      padding: 1.5rem; /* Increased padding */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Headings (no emojis) */
+    .gh-heading {
+      font-size: 1.5rem; /* text-2xl */
+      font-weight: 600;
+      color: var(--gh-blue); /* Consistent blue for major sections */
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--gh-border); /* Subtle separator */
+      padding-bottom: 0.5rem;
+    }
+
+    /* Smaller headings like "Update Profile" */
+    .gh-sub-heading {
+        font-size: 1.25rem; /* text-xl */
+        font-weight: 600;
+        color: var(--gh-green); /* Green for "Update Profile" as in original */
+        margin-bottom: 1rem;
+    }
+
+
+    /* Input Fields */
+    .gh-input {
+      background-color: var(--gh-bg-tertiary);
+      border: 1px solid var(--gh-border);
+      color: var(--gh-text-primary);
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .gh-input:focus {
+      outline: none;
+      border-color: var(--gh-blue);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+    }
+    .gh-input::placeholder {
+      color: var(--gh-text-secondary);
+    }
+
+    /* Buttons */
+    .gh-btn {
+      padding: 0.75rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex; /* For alignment of text/icons */
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem; /* Space between text and icon */
+    }
+
+    .gh-btn-primary {
+      background-color: var(--gh-blue);
+      color: white;
+      box-shadow: 0 1px 0 rgba(27, 31, 35, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+    .gh-btn-primary:hover {
+      background-color: #3694f3;
+      box-shadow: 0 1px 0 rgba(27, 31, 35, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .gh-btn-success {
+      background-color: var(--gh-green);
+      color: white;
+      box-shadow: 0 1px 0 rgba(27, 31, 35, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+    .gh-btn-success:hover {
+      background-color: #288f3e;
+      box-shadow: 0 1px 0 rgba(27, 31, 35, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .gh-btn-danger {
+      background-color: var(--gh-red);
+      color: white;
+      box-shadow: 0 1px 0 rgba(27, 31, 35, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+    .gh-btn-danger:hover {
+      background-color: #d73a49;
+      box-shadow: 0 1px 0 rgba(27, 31, 35, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .gh-btn-secondary { /* For confirm/cancel inside delete boxes */
+        background-color: #21262D;
+        color: var(--gh-blue);
+        border-color: var(--gh-border);
+        padding: 0.5rem 1rem;
+    }
+    .gh-btn-secondary:hover {
+        background-color: #30363D;
+        border-color: #8B949E;
+        color: var(--gh-text-primary);
+    }
+
+    /* Card/List Item Styling */
+    .gh-card {
+      background-color: var(--gh-bg-tertiary);
+      border: 1px solid var(--gh-border);
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .gh-card:hover {
+        border-color: var(--gh-blue);
+        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+    }
+    .gh-card h4 {
+        color: var(--gh-blue);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .gh-card p {
+        color: var(--gh-text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    .gh-card a {
+        color: var(--gh-blue);
+        text-decoration: underline;
+    }
+    .gh-card a:hover {
+        color: #79c0ff;
+    }
+
+    /* Static Info block - align labels and values */
+    .gh-info-item {
+        display: flex;
+        flex-wrap: wrap; /* Allow wrapping for long content */
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+    .gh-info-item .label {
+        font-weight: 600;
+        color: var(--gh-text-secondary);
+        min-width: 90px; /* Align labels */
+    }
+    .gh-info-item .value {
+        flex-grow: 1;
+        color: var(--gh-text-primary);
+    }
+    .gh-info-item a.value {
+        color: var(--gh-blue);
+        text-decoration: underline;
+    }
+    .gh-info-item a.value:hover {
+        color: #79c0ff;
+    }
+
+
+    /* Code-like Output */
+    #cv-output {
+      background-color: #010409;
+      color: #7EE787; /* Light green for code text */
+      border: 1px solid #1A202C;
+      padding: 1rem;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+
+    /* Status messages */
+    .status-success { color: var(--gh-green); }
+    .status-error { color: var(--gh-red); }
+
+    /* Confirmation Box */
+    .confirm-box {
+        background-color: var(--gh-bg-tertiary);
+        border: 1px solid var(--gh-red); /* Red border for danger confirmation */
+        border-radius: 6px;
+        padding: 1rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        color: var(--gh-text-primary);
+        font-size: 0.9rem;
+    }
+    .confirm-box strong {
+        color: var(--gh-red);
     }
   </style>
 </head>
-<body class="bg-gray-950 text-white min-h-screen">
-  <div class="flex flex-col md:flex-row h-full">
-    <div class="md:w-1/2 p-6 bg-gray-900 border-r border-gray-800 overflow-auto">
-      <h1 class="text-3xl font-bold mb-6 text-blue-400">👋 Welcome to Your Dashboard</h1>
-      <div class="space-y-4 text-base">
-        <div><span class="font-semibold text-gray-400">Full Name:</span> <span id="static_full_name"></span></div>
-        <div><span class="font-semibold text-gray-400">Email:</span> <span id="static_email"></span></div>
-        <div><span class="font-semibold text-gray-400">Bio:</span> <span id="static_bio"></span></div>
-        <div><span class="font-semibold text-gray-400">LinkedIn:</span> <a id="static_linkedin" class="text-blue-300 underline" target="_blank"></a></div>
-        <div><span class="font-semibold text-gray-400">Portfolio:</span> <a id="static_portfolio" class="text-blue-300 underline" target="_blank"></a></div>
-        <div><span class="font-semibold text-gray-400">GitHub:</span> <a id="static_github" class="text-blue-300 underline" target="_blank"></a></div>
+<body>
+  <div class="gh-page-container">
+    <div class="flex flex-col md:flex-row gap-6">
+      <div class="md:w-2/3 gh-main-content">
+        <div class="gh-panel">
+          <h1 class="gh-heading">Your Profile</h1>
+          <div class="space-y-3">
+            <div class="gh-info-item"><span class="label">Full Name:</span> <span id="static_full_name" class="value"></span></div>
+            <div class="gh-info-item"><span class="label">Email:</span> <span id="static_email" class="value"></span></div>
+            <div class="gh-info-item"><span class="label">Bio:</span> <span id="static_bio" class="value"></span></div>
+            <div class="gh-info-item"><span class="label">LinkedIn:</span> <a id="static_linkedin" class="value" target="_blank"></a></div>
+            <div class="gh-info-item"><span class="label">Portfolio:</span> <a id="static_portfolio" class="value" target="_blank"></a></div>
+            <div class="gh-info-item"><span class="label">GitHub:</span> <a id="static_github" class="value" target="_blank"></a></div>
+          </div>
+        </div>
+
+        <div class="gh-panel">
+          <h2 class="gh-heading">Projects</h2>
+          <div id="projects-list" class="space-y-4"></div>
+          <button id="toggle-project-form" class="mt-4 gh-btn gh-btn-primary">Add New Project</button>
+          <form id="new-project-form" class="space-y-3 hidden gh-panel p-4 mt-4">
+            <input id="project_name" class="w-full gh-input" placeholder="Project Name" required />
+            <textarea id="project_desc" rows="2" class="w-full gh-input" placeholder="Description" required></textarea>
+            <input id="project_demo" type="url" class="w-full gh-input" placeholder="Live Demo URL" />
+            <input id="project_repo" type="url" class="w-full gh-input" placeholder="GitHub Repo URL" />
+            <input id="project_skills" class="w-full gh-input" placeholder="Skills (comma-separated)" />
+            <button type="submit" class="gh-btn gh-btn-success w-full">Save Project</button>
+          </form>
+          <p id="project-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500 status-success"></p>
+        </div>
+
+        <div class="gh-panel">
+          <h3 class="gh-heading">Certificates</h3>
+          <div id="certificates-list" class="space-y-4"></div>
+          <button id="toggle-certificate-form" class="mt-4 gh-btn gh-btn-primary">Add Certificate</button>
+          <form id="new-certificate-form" class="space-y-3 hidden gh-panel p-4 mt-4">
+            <input id="cert_title" class="w-full gh-input" placeholder="Certificate Title" required />
+            <input id="cert_provider" class="w-full gh-input" placeholder="Provider" required />
+            <input id="cert_year_from" type="number" class="w-full gh-input" placeholder="Year From" />
+            <input id="cert_year_to" type="number" class="w-full gh-input" placeholder="Year To (optional)" />
+            <textarea id="cert_desc" rows="2" class="w-full gh-input" placeholder="Description"></textarea>
+            <input id="cert_links" type="url" class="w-full gh-input" placeholder="Certificate Link (optional)" />
+            <button type="submit" class="gh-btn gh-btn-success w-full">Save Certificate</button>
+          </form>
+          <p id="certificate-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500 status-success"></p>
+        </div>
+
+        <div class="gh-panel">
+          <h3 class="gh-heading">Employment</h3>
+          <div id="employment-list" class="space-y-4"></div>
+          <button id="toggle-employment-form" class="mt-4 gh-btn gh-btn-primary">Add Job</button>
+          <form id="new-employment-form" class="space-y-3 hidden gh-panel p-4 mt-4">
+            <input id="job_title" class="w-full gh-input" placeholder="Job Title" required />
+            <input id="job_company" class="w-full gh-input" placeholder="Company" required />
+            <input id="job_year_from" type="number" class="w-full gh-input" placeholder="Year From" />
+            <input id="job_year_to" type="number" class="w-full gh-input" placeholder="Year To (optional)" />
+            <textarea id="job_desc" rows="2" class="w-full gh-input" placeholder="Description"></textarea>
+            <input id="job_links" type="url" class="w-full gh-input" placeholder="More Info Link (optional)" />
+            <button type="submit" class="gh-btn gh-btn-success w-full">Save Job</button>
+          </form>
+          <p id="employment-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500 status-success"></p>
+        </div>
+
+        <div class="gh-panel">
+          <h3 class="gh-heading">Volunteering</h3>
+          <div id="volunteering-list" class="space-y-4"></div>
+          <button id="toggle-volunteering-form" class="mt-4 gh-btn gh-btn-primary">Add Volunteering</button>
+          <form id="new-volunteering-form" class="space-y-3 hidden gh-panel p-4 mt-4">
+            <input id="vol_role" class="w-full gh-input" placeholder="Role or Title" required />
+            <input id="vol_org" class="w-full gh-input" placeholder="Organization" required />
+            <input id="vol_year_from" type="number" class="w-full gh-input" placeholder="Year From" />
+            <input id="vol_year_to" type="number" class="w-full gh-input" placeholder="Year To (optional)" />
+            <textarea id="vol_desc" rows="2" class="w-full gh-input" placeholder="Description"></textarea>
+            <input id="vol_links" type="url" class="w-full gh-input" placeholder="More Info Link (optional)" />
+            <button type="submit" class="gh-btn gh-btn-success w-full">Save Volunteering</button>
+          </form>
+          <p id="volunteering-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500 status-success"></p>
+        </div>
+
+        <div class="gh-panel">
+          <h3 class="gh-heading">Education</h3>
+          <div id="education-list" class="space-y-4"></div>
+          <button id="toggle-education-form" class="mt-4 gh-btn gh-btn-primary">Add Education</button>
+          <form id="new-education-form" class="space-y-3 hidden gh-panel p-4 mt-4">
+            <input id="edu_degree" class="w-full gh-input" placeholder="Degree (e.g., BSc, MA)" required />
+            <input id="edu_institution" class="w-full gh-input" placeholder="Institution" required />
+            <input id="edu_year_from" type="number" class="w-full gh-input" placeholder="Year From" />
+            <input id="edu_year_to" type="number" class="w-full gh-input" placeholder="Year To (optional)" />
+            <textarea id="edu_desc" rows="2" class="w-full gh-input" placeholder="Description (e.g., academic achievements, thesis)"></textarea>
+            <button type="submit" class="gh-btn gh-btn-success w-full">Save Education</button>
+          </form>
+          <p id="education-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500 status-success"></p>
+        </div>
       </div>
 
-      <h2 class="mt-10 text-xl font-semibold text-blue-300">🧩 Your Projects</h2>
-      <div id="projects-list" class="mt-4 space-y-4"></div>
+      <div class="md:w-1/3 flex flex-col gap-6">
+        <div class="gh-panel">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="gh-sub-heading">Update Profile</h2>
+            <button id="logout-btn" class="gh-btn gh-btn-danger">Logout</button>
+          </div>
 
-      <h3 class="text-xl font-semibold text-blue-300 mt-10">🎓 Certificates</h3>
-      <div id="certificates-list" class="mt-4 space-y-4"></div>
-      <button id="toggle-certificate-form" class="mt-2 mb-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">➕ Add Certificate</button>
-      <form id="new-certificate-form" class="space-y-3 hidden bg-gray-900 p-4 rounded">
-        <input id="cert_title" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Certificate Title" required />
-        <input id="cert_provider" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Provider" required />
-        <input id="cert_year_from" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year From" />
-        <input id="cert_year_to" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year To (optional)" />
-        <textarea id="cert_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Certificate</button>
-      </form>
-      <p id="certificate-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
+          <form id="update-form" class="space-y-4 mt-6">
+            <input id="full_name" class="w-full gh-input" placeholder="Full Name" />
+            <input id="email" type="email" class="w-full gh-input" placeholder="Email" />
+            <textarea id="bio" class="w-full gh-input" rows="2" placeholder="Bio"></textarea>
+            <input id="linkedin_url" type="url" class="w-full gh-input" placeholder="LinkedIn URL" />
+            <input id="portfolio_url" type="url" class="w-full gh-input" placeholder="Portfolio URL" />
+            <input id="github_url" type="url" class="w-full gh-input" placeholder="GitHub URL" />
+            <button type="submit" class="gh-btn gh-btn-success w-full">Save Info</button>
+          </form>
+          <p id="update-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500 status-success"></p>
+        </div>
 
-
-      <h3 class="text-xl font-semibold text-blue-300 mt-10">💼 Employment</h3>
-      <div id="employment-list" class="mt-4 space-y-4"></div>
-      <button id="toggle-employment-form" class="mt-2 mb-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">➕ Add Job</button>
-      <form id="new-employment-form" class="space-y-3 hidden bg-gray-900 p-4 rounded">
-        <input id="job_title" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Job Title" required />
-        <input id="job_company" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Company" required />
-        <input id="job_year_from" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year From" />
-        <input id="job_year_to" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year To (optional)" />
-        <textarea id="job_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Job</button>
-      </form>
-      <p id="employment-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
-
-
-      <h3 class="text-xl font-semibold text-blue-300 mt-10">🤝 Volunteering</h3>
-      <div id="volunteering-list" class="mt-4 space-y-4"></div>
-      <button id="toggle-volunteering-form" class="mt-2 mb-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">➕ Add Volunteering</button>
-      <form id="new-volunteering-form" class="space-y-3 hidden bg-gray-900 p-4 rounded">
-        <input id="vol_role" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Role or Title" required />
-        <input id="vol_org" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Organization" required />
-        <input id="vol_year_from" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year From" />
-        <input id="vol_year_to" type="number" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Year To (optional)" />
-        <textarea id="vol_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description"></textarea>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Volunteering</button>
-      </form>
-      <p id="volunteering-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
-
-    </div>
-
-    <div class="md:w-1/2 p-6 bg-gray-800 overflow-auto">
-      <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold text-green-400">Update Profile</h2>
-        <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
-      </div>
-
-      <form id="update-form" class="space-y-4 mt-6">
-        <input id="full_name" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Full Name" />
-        <input id="email" type="email" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Email" />
-        <textarea id="bio" class="w-full bg-gray-700 text-white p-2 rounded" rows="2" placeholder="Bio"></textarea>
-        <input id="linkedin_url" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="LinkedIn URL" />
-        <input id="portfolio_url" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Portfolio URL" />
-        <input id="github_url" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="GitHub URL" />
-        <button type="submit" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-white">💾 Save Info</button>
-      </form>
-      <p id="update-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
-
-      <h3 class="text-xl font-semibold text-blue-300 mt-10">Projects Manager</h3>
-      <button id="toggle-project-form" class="mt-2 mb-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">➕ Add New Project</button>
-      <form id="new-project-form" class="space-y-3 hidden bg-gray-900 p-4 rounded">
-        <input id="project_name" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Project Name" required />
-        <textarea id="project_desc" rows="2" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Description" required></textarea>
-        <input id="project_demo" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Live Demo URL" />
-        <input id="project_repo" type="url" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="GitHub Repo URL" />
-        <input id="project_skills" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="Skills (comma-separated)" />
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">✅ Save Project</button>
-      </form>
-      <p id="project-status" class="mt-4 text-sm opacity-0 transition-opacity duration-500"></p>
-
-      <h3 class="text-xl font-semibold text-green-300 mt-10">🤖 AI CV Generator</h3>
-      <div class="space-y-3 bg-gray-900 p-4 rounded mt-4">
-        <input id="openai_key" type="password" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="🔑 OpenAI API Key" />
-        <textarea id="job_desc" rows="5" class="w-full bg-gray-700 text-white p-2 rounded" placeholder="📝 Paste job description here..."></textarea>
-        <button id="generate-cv" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded w-full">⚡ Generate CV with AI</button>
-        <pre id="cv-output" class="mt-4 bg-gray-900 text-white p-4 rounded whitespace-pre-wrap text-sm"></pre>
-        <button id="download-pdf" class="mt-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded hidden">📄 Download CV as PDF</button>
-        <p id="cv-status" class="text-sm text-gray-400"></p>
-        <a id="cv-download" href="#" download="ai-cv.pdf" class="hidden text-blue-400 underline block mt-2">📥 Download CV PDF</a>
+        <div class="gh-panel">
+          <h3 class="gh-sub-heading">AI CV Generator</h3>
+          <div class="space-y-3 mt-4">
+            <input id="openai_key" type="password" class="w-full gh-input" placeholder="OpenAI API Key" />
+            <textarea id="job_desc" rows="5" class="w-full gh-input" placeholder="Paste job description here..."></textarea>
+            <button id="generate-cv" class="gh-btn gh-btn-primary w-full">Generate CV with AI</button>
+            <pre id="cv-output" class="mt-4"></pre>
+            <button id="download-pdf" class="mt-2 gh-btn gh-btn-primary hidden w-full">Download CV as PDF</button>
+            <p id="cv-status" class="text-sm text-gray-400 status-success"></p>
+            <a id="cv-download" href="#" download="ai-cv.pdf" class="hidden text-blue-400 hover:text-blue-300 underline block mt-2">Download CV PDF</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
